@@ -7,6 +7,7 @@
 from builders.database import load_database
 from builders.filters import build_filters
 from builders.config import build_config
+from builders.releases import build_releases
 
 
 def main():
@@ -23,12 +24,16 @@ def main():
     print(f"Loaded {len(rows)} approved domains.")
     print()
 
-    print("Generating filter files...")
+    print("Generating filters...")
     build_filters(rows)
     print()
 
-    print("Generating configuration files...")
+    print("Generating config...")
     build_config(rows)
+    print()
+
+    print("Generating releases...")
+    build_releases()
     print()
 
     print("===================================")

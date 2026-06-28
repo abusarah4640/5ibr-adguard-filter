@@ -1,11 +1,47 @@
 {
-  "project": "5ibr AdGuard Filter",
-  "version_file": "VERSION",
-  "release_branch": "main",
-  "tag_prefix": "v",
-  "generate_changelog": true,
-  "generate_release": true,
-  "build_before_release": true,
-  "run_validation": true,
-  "run_tests": true
+    "home": {
+        "title": "5ibr Home Filter",
+        "description": "Balanced filter for home users.",
+        "filters": [
+            "ads",
+            "privacy",
+            "telemetry",
+            "social",
+            "mobile",
+            "gaming",
+            "smart-tv"
+        ]
+    },
+
+    "family": {
+        "title": "5ibr Family Filter",
+        "description": "Home filter with parental protection.",
+        "filters": [
+            "ads",
+            "privacy",
+            "telemetry",
+            "social",
+            "mobile",
+            "gaming",
+            "smart-tv",
+            "parental"
+        ]
+    },
+
+    "privacy": {
+        "title": "5ibr Privacy Filter",
+        "description": "Privacy focused filter.",
+        "filters": [
+            "privacy",
+            "telemetry"
+        ]
+    },
+
+    "gaming": {
+        "title": "5ibr Gaming Filter",
+        "description": "Gaming services filter.",
+        "filters": [
+            "gaming"
+        ]
+    }
 }
