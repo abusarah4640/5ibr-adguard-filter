@@ -6,25 +6,34 @@
 
 from builders.database import load_database
 from builders.filters import build_filters
+from builders.config import build_config
 
 
 def main():
+
+    print("===================================")
+    print("5ibr Filter Build System")
+    print("===================================")
+    print()
 
     print("Loading database...")
 
     rows = load_database()
 
-    print(f"Loaded {len(rows)} domains")
-
+    print(f"Loaded {len(rows)} approved domains.")
     print()
 
+    print("Generating filter files...")
     build_filters(rows)
-
     print()
 
-    print("========================")
-    print("5ibr Build Complete")
-    print("========================")
+    print("Generating configuration files...")
+    build_config(rows)
+    print()
+
+    print("===================================")
+    print("Build completed successfully.")
+    print("===================================")
 
 
 if __name__ == "__main__":
