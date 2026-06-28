@@ -1,7 +1,49 @@
-! Title: 5ibr Gaming Filter
-! Description: Blocks advertising and telemetry for gaming platforms.
+! Title: 5ibr Social Filter
+! Description: Blocks social widgets, tracking and social media telemetry.
 ! Author: 5ibr
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
 ! Expires: 7 days
+
+! ======================================================================
+! Facebook
+! ======================================================================
+
+||connect.facebook.net^
+||staticxx.facebook.com^
+||an.facebook.com^
+
+! ======================================================================
+! Instagram
+! ======================================================================
+
+||graph.instagram.com^
+||i.instagram.com^
+
+! ======================================================================
+! TikTok
+! ======================================================================
+
+||analytics.tiktok.com^
+||business-api.tiktok.com^
+
+! ======================================================================
+! Snapchat
+! ======================================================================
+
+||tr.snapchat.com^
+
+! ======================================================================
+! X (Twitter)
+! ======================================================================
+
+||analytics.twitter.com^
+||ads-twitter.com^
+
+! ======================================================================
+! LinkedIn
+! ======================================================================
+
+||px.ads.linkedin.com^
+||licdn.com^$ping
