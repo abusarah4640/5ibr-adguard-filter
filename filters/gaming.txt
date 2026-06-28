@@ -5,3 +5,10 @@
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
 ! Expires: 7 days
+
+! ============================
+! PlayStation Analytics
+! ============================
+
+||event.api.np.km.playstation.net^
+||smetrics.aem.playstation.com^
