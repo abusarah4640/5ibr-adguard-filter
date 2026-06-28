@@ -1,7 +1,22 @@
-! Title: 5ibr Gaming Filter
-! Description: Blocks advertising and telemetry for gaming platforms.
+! Title: 5ibr Smart TV Filter
+! Description: Blocks ads and telemetry for Smart TVs.
 ! Author: 5ibr
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
 ! Expires: 7 days
+
+! ============================
+! LG Smart TV Advertising
+! ============================
+
+||lgsmartad.com^
+||alphonso.tv^
+
+! ============================
+! LG Smart TV Analytics
+! ============================
+
+||eic.rdl.lgtvcommon.com^
+||eic.homeprv.lgtvcommon.com^
+||eic.wiseconfig.lgtvcommon.com^
