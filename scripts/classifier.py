@@ -3,62 +3,55 @@
 import json
 from pathlib import Path
 
+
 ROOT = Path(__file__).resolve().parent.parent
 
-CATEGORY_DB = ROOT / "config" / "categories.json"
-SIGNATURE_DB = ROOT / "config" / "signatures.json"
+SIGNATURES_FILE = ROOT / "config" / "signatures.json"
+VENDORS_FILE = ROOT / "config" / "vendors.json"
 
 
 class DomainClassifier:
 
     def __init__(self):
 
-        with open(CATEGORY_DB, encoding="utf-8") as f:
-            self.categories = json.load(f)
-
-        with open(SIGNATURE_DB, encoding="utf-8") as f:
+        with open(SIGNATURES_FILE, encoding="utf-8") as f:
             self.signatures = json.load(f)
 
-    def classify(self, domain):
+        with open(VENDORS_FILE, encoding="utf-8") as f:
+            self.vendors = json.load(f)
+
+    def classify(self, domain: str):
 
         domain = domain.lower()
 
-        if domain in self.signatures:
+        for vendor, data in self.signatures.items():
 
-            item = self.signatures[domain]
+            for pattern in data["patterns"]:
 
-            return {
-                "category": item["category"],
-                "confidence": item["confidence"],
-                "vendor": item["vendor"],
-                "reason": item["reason"],
-                "source": "signature"
-            }
+                if pattern.lower() in domain:
 
-        best_category = "unknown"
-        best_score = 0
+                    vendor_info = self.vendors.get(vendor, {})
 
-        for category, keywords in self.categories.items():
-
-            score = 0
-
-            for keyword in keywords:
-
-                if keyword.lower() in domain:
-                    score += 1
-
-            if score > best_score:
-                best_score = score
-                best_category = category
-
-        confidence = min(best_score * 30, 90)
+                    return {
+                        "vendor": vendor,
+                        "category": data["category"],
+                        "confidence": data["confidence"],
+                        "country": vendor_info.get("country"),
+                        "website": vendor_info.get("website"),
+                        "type": vendor_info.get("type"),
+                        "products": vendor_info.get("products", []),
+                        "matched_pattern": pattern
+                    }
 
         return {
-            "category": best_category,
-            "confidence": confidence,
             "vendor": "Unknown",
-            "reason": "Keyword classification",
-            "source": "keywords"
+            "category": "unknown",
+            "confidence": 0,
+            "country": None,
+            "website": None,
+            "type": None,
+            "products": [],
+            "matched_pattern": None
         }
 
 
@@ -66,15 +59,8 @@ if __name__ == "__main__":
 
     classifier = DomainClassifier()
 
-    tests = [
-        "mobile.events.data.microsoft.com",
-        "sdkconfig.ad.xiaomi.com",
-        "graph.facebook.com",
-        "telemetry.riotgames.com",
-        "unknown.example.com"
-    ]
+    result = classifier.classify(
+        "firebaseinstallations.googleapis.com"
+    )
 
-    for domain in tests:
-        print(domain)
-        print(classifier.classify(domain))
-        print()
+    print(result)
