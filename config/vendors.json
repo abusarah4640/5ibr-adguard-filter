@@ -1,0 +1,15 @@
+{
+  "Microsoft": {
+    "country": "United States",
+    "website": "https://www.microsoft.com",
+    "type": "Operating System",
+    "products": [
+      "Windows",
+      "Microsoft Edge",
+      "Xbox",
+      "Office",
+      "OneDrive",
+      "Microsoft Store"
+    ]
+  }
+}
