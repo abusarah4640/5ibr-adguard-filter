@@ -1,0 +1,36 @@
+! Title: 5ibr Ads Filter
+! Description: Blocks advertisements
+! Version: 1.0.0
+! Last modified: 2026-06-28
+! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
+! Expires: 24 hours
+
+! ==========================
+! Google Ads
+! ==========================
+
+||doubleclick.net^
+||googlesyndication.com^
+||googletagservices.com^
+||adservice.google.com^
+||pagead2.googlesyndication.com^
+
+! ==========================
+! Microsoft Ads
+! ==========================
+
+||ads.msn.com^
+||bat.bing.com^
+
+! ==========================
+! Amazon Ads
+! ==========================
+
+||aax.amazon-adsystem.com^
+
+! ==========================
+! Media.net
+! ==========================
+
+||media.net^
+||adservetx.media.net^
