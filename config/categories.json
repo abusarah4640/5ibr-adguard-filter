@@ -1,34 +1,92 @@
 {
-  "version": "1.0.0",
+  "ads": [
+    "ads",
+    "adservice",
+    "doubleclick",
+    "adnxs",
+    "googlesyndication",
+    "googleads",
+    "admob",
+    "taboola",
+    "outbrain",
+    "criteo",
+    "unityads",
+    "applovin",
+    "ironSource",
+    "chartboost",
+    "vungle",
+    "adcolony",
+    "mintegral",
+    "adtraffic"
+  ],
 
-  "filters": [
-    {
-      "file": "ads.txt",
-      "name": "Ads"
-    },
-    {
-      "file": "telemetry.txt",
-      "name": "Telemetry"
-    },
-    {
-      "file": "privacy.txt",
-      "name": "Privacy"
-    },
-    {
-      "file": "social.txt",
-      "name": "Social"
-    },
-    {
-      "file": "mobile.txt",
-      "name": "Mobile"
-    },
-    {
-      "file": "gaming.txt",
-      "name": "Gaming"
-    },
-    {
-      "file": "smart-tv.txt",
-      "name": "Smart TV"
-    }
+  "telemetry": [
+    "telemetry",
+    "metrics",
+    "analytics",
+    "events",
+    "collector",
+    "collect",
+    "tracking",
+    "diagnostic",
+    "diagnostics",
+    "usage",
+    "stats",
+    "measurement",
+    "report",
+    "logging",
+    "logservice",
+    "crash",
+    "crashlytics",
+    "perf",
+    "monitor"
+  ],
+
+  "privacy": [
+    "fingerprint",
+    "fingerprinting",
+    "devicecheck",
+    "identify",
+    "identity",
+    "beacon",
+    "pixel",
+    "session"
+  ],
+
+  "social": [
+    "facebook",
+    "instagram",
+    "messenger",
+    "whatsapp",
+    "twitter",
+    "x.com",
+    "linkedin",
+    "snapchat",
+    "tiktok",
+    "discord"
+  ],
+
+  "gaming": [
+    "steam",
+    "epic",
+    "riot",
+    "ea",
+    "origin",
+    "ubisoft",
+    "xbox",
+    "playstation",
+    "battle",
+    "blizzard"
+  ],
+
+  "smart-tv": [
+    "lgtv",
+    "webos",
+    "samsung",
+    "tizen",
+    "hisense",
+    "roku",
+    "androidtv",
+    "bravia"
   ]
 }
