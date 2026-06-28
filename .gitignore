@@ -9,6 +9,14 @@ reports/*.md
 # Local files
 querylog.json
 
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
 # macOS
 .DS_Store
 
