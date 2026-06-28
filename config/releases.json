@@ -1,66 +1,11 @@
 {
-  "version": "1.0.0",
-
-  "releases": [
-    {
-      "id": "home",
-      "title": "5ibr Home Filter",
-      "description": "Balanced filter recommended for most users.",
-      "output": "home.txt",
-      "filters": [
-        "ads.txt",
-        "telemetry.txt",
-        "privacy.txt",
-        "social.txt",
-        "mobile.txt",
-        "gaming.txt",
-        "smart-tv.txt",
-        "whitelist.txt"
-      ]
-    },
-    {
-      "id": "lite",
-      "title": "5ibr Lite Filter",
-      "description": "Lightweight filter with minimal blocking.",
-      "output": "lite.txt",
-      "filters": [
-        "ads.txt",
-        "telemetry.txt"
-      ]
-    },
-    {
-      "id": "privacy",
-      "title": "5ibr Privacy Filter",
-      "description": "Privacy-focused filter.",
-      "output": "privacy.txt",
-      "filters": [
-        "telemetry.txt",
-        "privacy.txt",
-        "social.txt",
-        "whitelist.txt"
-      ]
-    },
-    {
-      "id": "gaming",
-      "title": "5ibr Gaming Filter",
-      "description": "Gaming telemetry protection.",
-      "output": "gaming.txt",
-      "filters": [
-        "gaming.txt",
-        "telemetry.txt",
-        "whitelist.txt"
-      ]
-    },
-    {
-      "id": "smart-tv",
-      "title": "5ibr Smart TV Filter",
-      "description": "Smart TV privacy filter.",
-      "output": "smart-tv.txt",
-      "filters": [
-        "smart-tv.txt",
-        "telemetry.txt",
-        "whitelist.txt"
-      ]
-    }
-  ]
+  "project": "5ibr AdGuard Filter",
+  "version_file": "VERSION",
+  "release_branch": "main",
+  "tag_prefix": "v",
+  "generate_changelog": true,
+  "generate_release": true,
+  "build_before_release": true,
+  "run_validation": true,
+  "run_tests": true
 }
