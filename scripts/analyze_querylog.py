@@ -1,27 +1,47 @@
 #!/usr/bin/env python3
 
-import json
+"""
+5ibr AdGuard Filter
+Query Log Analyzer v2
+"""
+
 import csv
-from pathlib import Path
+import json
 from collections import Counter
+from pathlib import Path
+
+from filter_loader import load_existing_rules
 
 ROOT = Path(__file__).resolve().parent.parent
 
 QUERY_LOG = ROOT / "querylog.json"
+
 REPORT_DIR = ROOT / "reports"
 
 TOP_CSV = REPORT_DIR / "top_domains.csv"
+NEW_CSV = REPORT_DIR / "new_candidates.csv"
 
 
 def extract_domain(entry):
+
     return entry.get("QH", "").strip().lower()
 
 
 def load_querylog():
 
-    domains = Counter()
+    counter = Counter()
 
-    with open(QUERY_LOG, encoding="utf-8", errors="ignore") as f:
+    if not QUERY_LOG.exists():
+        raise FileNotFoundError(
+            f"Missing file: {QUERY_LOG}"
+        )
+
+    with open(
+        QUERY_LOG,
+        "r",
+        encoding="utf-8",
+        errors="ignore"
+    ) as f:
 
         for line in f:
 
@@ -32,22 +52,37 @@ def load_querylog():
 
             try:
                 obj = json.loads(line)
+
             except Exception:
                 continue
 
             domain = extract_domain(obj)
 
             if domain:
-                domains[domain] += 1
+                counter[domain] += 1
 
-    return domains
+    return counter
 
 
-def save_csv(counter):
+def is_already_blocked(domain, rules):
 
-    REPORT_DIR.mkdir(exist_ok=True)
+    patterns = (
+        f"||{domain}^",
+        f"|{domain}^",
+        domain,
+    )
 
-    with open(TOP_CSV, "w", newline="", encoding="utf-8") as csvfile:
+    return any(pattern in rules for pattern in patterns)
+
+
+def save_top(counter):
+
+    with open(
+        TOP_CSV,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as csvfile:
 
         writer = csv.writer(csvfile)
 
@@ -69,20 +104,63 @@ def save_csv(counter):
             ])
 
 
+def save_candidates(counter, rules):
+
+    with open(
+        NEW_CSV,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as csvfile:
+
+        writer = csv.writer(csvfile)
+
+        writer.writerow([
+            "Rank",
+            "Requests",
+            "Domain"
+        ])
+
+        rank = 1
+
+        for domain, count in counter.most_common():
+
+            if is_already_blocked(domain, rules):
+                continue
+
+            writer.writerow([
+                rank,
+                count,
+                domain
+            ])
+
+            rank += 1
+
+
 def main():
 
     print()
-    print("====================================")
+
+    print("========================================")
     print("5ibr Query Log Analyzer")
-    print("====================================")
+    print("========================================")
     print()
+
+    REPORT_DIR.mkdir(exist_ok=True)
 
     counter = load_querylog()
 
-    save_csv(counter)
+    rules = load_existing_rules()
+
+    save_top(counter)
+
+    save_candidates(counter, rules)
 
     print(f"Unique Domains : {len(counter)}")
-    print(f"CSV Report     : {TOP_CSV}")
+    print(f"Existing Rules : {len(rules)}")
+    print()
+    print(f"Generated : {TOP_CSV}")
+    print(f"Generated : {NEW_CSV}")
     print()
 
 
