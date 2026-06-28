@@ -1,9 +1,12 @@
 {
+  "version": "1.0.0",
+
   "releases": [
     {
-      "name": "home",
+      "id": "home",
       "title": "5ibr Home Filter",
-      "description": "Recommended balanced filter.",
+      "description": "Balanced filter recommended for most users.",
+      "output": "home.txt",
       "filters": [
         "ads.txt",
         "telemetry.txt",
@@ -16,18 +19,20 @@
       ]
     },
     {
-      "name": "lite",
+      "id": "lite",
       "title": "5ibr Lite Filter",
       "description": "Lightweight filter with minimal blocking.",
+      "output": "lite.txt",
       "filters": [
         "ads.txt",
         "telemetry.txt"
       ]
     },
     {
-      "name": "privacy",
+      "id": "privacy",
       "title": "5ibr Privacy Filter",
-      "description": "Maximum privacy protection.",
+      "description": "Privacy-focused filter.",
+      "output": "privacy.txt",
       "filters": [
         "telemetry.txt",
         "privacy.txt",
@@ -36,9 +41,10 @@
       ]
     },
     {
-      "name": "gaming",
+      "id": "gaming",
       "title": "5ibr Gaming Filter",
       "description": "Gaming telemetry protection.",
+      "output": "gaming.txt",
       "filters": [
         "gaming.txt",
         "telemetry.txt",
@@ -46,27 +52,13 @@
       ]
     },
     {
-      "name": "smart-tv",
+      "id": "smart-tv",
       "title": "5ibr Smart TV Filter",
       "description": "Smart TV privacy filter.",
+      "output": "smart-tv.txt",
       "filters": [
         "smart-tv.txt",
         "telemetry.txt",
-        "whitelist.txt"
-      ]
-    },
-    {
-      "name": "family",
-      "title": "5ibr Family Filter",
-      "description": "Family-friendly browsing filter.",
-      "filters": [
-        "ads.txt",
-        "telemetry.txt",
-        "privacy.txt",
-        "social.txt",
-        "mobile.txt",
-        "gaming.txt",
-        "smart-tv.txt",
         "whitelist.txt"
       ]
     }
