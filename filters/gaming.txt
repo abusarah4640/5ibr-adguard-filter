@@ -1,14 +1,51 @@
 ! Title: 5ibr Gaming Filter
-! Description: Blocks advertising and telemetry for gaming platforms.
+! Description: Blocks telemetry and advertising used by gaming platforms.
 ! Author: 5ibr
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
 ! Expires: 7 days
 
-! ============================
-! PlayStation Analytics
-! ============================
+! ======================================================================
+! Steam
+! ======================================================================
 
-||event.api.np.km.playstation.net^
-||smetrics.aem.playstation.com^
+||store.steampowered.com^$ping
+||partner.steamgames.com^$ping
+
+! ======================================================================
+! Xbox
+! ======================================================================
+
+||browser.events.data.microsoft.com^
+||mobile.events.data.microsoft.com^
+
+! ======================================================================
+! PlayStation
+! ======================================================================
+
+||data.pscp.playstation.net^
+
+! ======================================================================
+! Epic Games
+! ======================================================================
+
+||tracking.epicgames.com^
+
+! ======================================================================
+! EA
+! ======================================================================
+
+||eaassets-a.akamaihd.net^$ping
+
+! ======================================================================
+! Ubisoft
+! ======================================================================
+
+||public-ubiservices.ubi.com^$ping
+
+! ======================================================================
+! Riot Games
+! ======================================================================
+
+||telemetry.riotgames.com^
