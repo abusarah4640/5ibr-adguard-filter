@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fivebr"
+version = "1.0.0"
+description = "5ibr AdGuard Filter Development Toolkit"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0" }
+
+authors = [
+    { name = "5ibr" }
+]
+
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "."
+]
+
+testpaths = [
+    "tests"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.black]
+line-length = 88
