@@ -1,9 +1,10 @@
 ! Title: 5ibr Ads Filter
-! Description: Blocks advertisements
+! Description: Blocks advertising domains.
+! Author: 5ibr
+! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
-! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
-! Expires: 24 hours
+! Expires: 7 days
 
 ! ==========================
 ! Google Ads
