@@ -10,15 +10,21 @@ from builders.filters import build_filters
 
 def main():
 
+    print("Loading database...")
+
     rows = load_database()
+
+    print(f"Loaded {len(rows)} domains")
+
+    print()
 
     build_filters(rows)
 
     print()
-    print("==========================")
+
+    print("========================")
     print("5ibr Build Complete")
-    print("==========================")
-    print()
+    print("========================")
 
 
 if __name__ == "__main__":
