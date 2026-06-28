@@ -7,6 +7,11 @@ on:
 
   pull_request:
 
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   build:
 
@@ -14,7 +19,7 @@ jobs:
 
     steps:
 
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -22,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install pytest
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest
@@ -31,16 +36,41 @@ jobs:
         run: |
           python scripts/validate.py
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
-          pytest
+          pytest -v
 
       - name: Build Releases
         run: |
           python scripts/build.py
 
+      - name: Analyze Query Log (Optional)
+        run: |
+          if [ -f querylog.json ]; then
+            python scripts/analyze_querylog.py
+          else
+            echo "querylog.json not found, skipping analysis."
+          fi
+
+      - name: Generate Reports
+        run: |
+          if [ -f reports/new_candidates.csv ]; then
+            python scripts/report.py
+            python scripts/html_report.py
+          else
+            echo "No analysis results found, skipping reports."
+          fi
+
       - name: Upload Release Files
         uses: actions/upload-artifact@v4
         with:
-          name: fivebr-release
+          name: fivebr-releases
           path: releases/
+
+      - name: Upload Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fivebr-reports
+          path: reports/
+          if-no-files-found: ignore
