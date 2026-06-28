@@ -1,0 +1,85 @@
+{
+  "mobile.events.data.microsoft.com": {
+    "category": "telemetry",
+    "vendor": "Microsoft",
+    "confidence": 100,
+    "reason": "Official Microsoft telemetry endpoint"
+  },
+
+  "browser.events.data.microsoft.com": {
+    "category": "telemetry",
+    "vendor": "Microsoft",
+    "confidence": 100,
+    "reason": "Microsoft Edge telemetry"
+  },
+
+  "settings-win.data.microsoft.com": {
+    "category": "telemetry",
+    "vendor": "Microsoft",
+    "confidence": 100,
+    "reason": "Windows diagnostic telemetry"
+  },
+
+  "graph.facebook.com": {
+    "category": "social",
+    "vendor": "Meta",
+    "confidence": 100,
+    "reason": "Facebook Graph API"
+  },
+
+  "connect.facebook.net": {
+    "category": "social",
+    "vendor": "Meta",
+    "confidence": 100,
+    "reason": "Facebook tracking endpoint"
+  },
+
+  "sdkconfig.ad.xiaomi.com": {
+    "category": "ads",
+    "vendor": "Xiaomi",
+    "confidence": 100,
+    "reason": "Xiaomi advertising service"
+  },
+
+  "tracking.miui.com": {
+    "category": "telemetry",
+    "vendor": "Xiaomi",
+    "confidence": 100,
+    "reason": "MIUI tracking service"
+  },
+
+  "metrics.data.hicloud.com": {
+    "category": "telemetry",
+    "vendor": "Huawei",
+    "confidence": 100,
+    "reason": "Huawei telemetry endpoint"
+  },
+
+  "tracking.coloros.com": {
+    "category": "telemetry",
+    "vendor": "OPPO",
+    "confidence": 100,
+    "reason": "ColorOS telemetry"
+  },
+
+  "telemetry.riotgames.com": {
+    "category": "gaming",
+    "vendor": "Riot Games",
+    "confidence": 100,
+    "reason": "Official Riot telemetry"
+  },
+
+  "eic.rdl.lgtvcommon.com": {
+    "category": "smart-tv",
+    "vendor": "LG",
+    "confidence": 100,
+    "reason": "LG Smart TV telemetry"
+  },
+
+  "eic.homeprv.lgtvcommon.com": {
+    "category": "smart-tv",
+    "vendor": "LG",
+    "confidence": 100,
+    "reason": "LG Smart TV analytics"
+  }
+}
