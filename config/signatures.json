@@ -12,22 +12,34 @@
       "telemetry.microsoft.com",
       "oca.telemetry.microsoft.com",
       "sqm.telemetry.microsoft.com",
-      "cs1.wpc.v0cdn.net",
-      "choice.microsoft.com",
-      "choice.microsoft.com.nsatc.net",
-      "df.telemetry.microsoft.com",
-      "feedback.microsoft-hohm.com",
-      "feedback.search.microsoft.com",
-      "diagnostics.support.microsoft.com",
       "activity.windows.com",
-      "arc.msn.com",
       "browser.pipe.aria.microsoft.com",
       "self.events.data.microsoft.com",
-      "config.edge.skype.com",
-      "pipe.skype.com",
-      "s.gateway.messenger.live.com",
       "client.wns.windows.com",
       "wns.notify.windows.com"
+    ]
+  },
+
+  "Google": {
+    "category": "telemetry",
+    "confidence": 100,
+    "patterns": [
+      "app-measurement.com",
+      "firebaseinstallations.googleapis.com",
+      "firebaselogging.googleapis.com",
+      "firebase-settings.crashlytics.com",
+      "firebasecrashlytics.googleapis.com",
+      "crashlyticsreports-pa.googleapis.com",
+      "play.googleapis.com",
+      "android.clients.google.com",
+      "android.googleapis.com",
+      "connectivitycheck.gstatic.com",
+      "connectivitycheck.android.com",
+      "clients3.google.com",
+      "clients4.google.com",
+      "pagead2.googlesyndication.com",
+      "doubleclick.net",
+      "googleads.g.doubleclick.net"
     ]
   }
 }

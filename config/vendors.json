@@ -3,6 +3,7 @@
     "country": "United States",
     "website": "https://www.microsoft.com",
     "type": "Operating System",
+    "category": "Telemetry",
     "products": [
       "Windows",
       "Microsoft Edge",
@@ -10,6 +11,21 @@
       "Office",
       "OneDrive",
       "Microsoft Store"
+    ]
+  },
+
+  "Google": {
+    "country": "United States",
+    "website": "https://www.google.com",
+    "type": "Internet Services",
+    "category": "Telemetry",
+    "products": [
+      "Android",
+      "Chrome",
+      "Google Play Services",
+      "Firebase",
+      "Google Analytics",
+      "DoubleClick"
     ]
   }
 }
