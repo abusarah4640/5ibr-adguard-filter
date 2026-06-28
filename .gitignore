@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Reports
+reports/*.csv
+reports/*.md
+
+# Local files
+querylog.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
