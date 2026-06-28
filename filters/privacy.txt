@@ -1,7 +1,45 @@
-! Title: 5ibr Gaming Filter
-! Description: Blocks advertising and telemetry for gaming platforms.
+! Title: 5ibr Privacy Filter
+! Description: Blocks common tracking, fingerprinting and privacy-invasive domains.
 ! Author: 5ibr
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
 ! Last modified: 2026-06-28
 ! Expires: 7 days
+
+! ======================================================================
+! Analytics
+! ======================================================================
+
+||google-analytics.com^
+||ssl.google-analytics.com^
+||analytics.google.com^
+||googletagmanager.com^
+||googletagservices.com^
+
+! ======================================================================
+! Microsoft
+! ======================================================================
+
+||browser.events.data.microsoft.com^
+||self.events.data.microsoft.com^
+
+! ======================================================================
+! Meta
+! ======================================================================
+
+||connect.facebook.net^
+||graph.facebook.com^
+
+! ======================================================================
+! TikTok
+! ======================================================================
+
+||log.byteoversea.com^
+||mon.byteoversea.com^
+
+! ======================================================================
+! Fingerprinting
+! ======================================================================
+
+||fingerprintjs.com^
+||api.fpjs.io^
