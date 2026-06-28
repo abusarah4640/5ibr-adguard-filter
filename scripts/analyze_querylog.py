@@ -2,7 +2,7 @@
 
 """
 5ibr AdGuard Filter
-Query Log Analyzer v2
+Smart Query Log Analyzer v3
 """
 
 import csv
@@ -11,6 +11,7 @@ from collections import Counter
 from pathlib import Path
 
 from filter_loader import load_existing_rules
+from classifier import DomainClassifier
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -23,7 +24,6 @@ NEW_CSV = REPORT_DIR / "new_candidates.csv"
 
 
 def extract_domain(entry):
-
     return entry.get("QH", "").strip().lower()
 
 
@@ -68,6 +68,7 @@ def is_already_blocked(domain, rules):
 
     patterns = (
         f"||{domain}^",
+        f"@@||{domain}^",
         f"|{domain}^",
         domain,
     )
@@ -106,6 +107,8 @@ def save_top(counter):
 
 def save_candidates(counter, rules):
 
+    classifier = DomainClassifier()
+
     with open(
         NEW_CSV,
         "w",
@@ -118,7 +121,10 @@ def save_candidates(counter, rules):
         writer.writerow([
             "Rank",
             "Requests",
-            "Domain"
+            "Domain",
+            "Category",
+            "Confidence",
+            "Suggested Rule"
         ])
 
         rank = 1
@@ -128,23 +134,38 @@ def save_candidates(counter, rules):
             if is_already_blocked(domain, rules):
                 continue
 
+            result = classifier.classify(domain)
+
             writer.writerow([
                 rank,
                 count,
-                domain
+                domain,
+                result["category"],
+                result["confidence"],
+                f"||{domain}^"
             ])
 
             rank += 1
 
 
-def main():
+def print_summary(counter, rules):
 
     print()
-
     print("========================================")
     print("5ibr Query Log Analyzer")
     print("========================================")
     print()
+
+    print(f"Unique Domains : {len(counter)}")
+    print(f"Existing Rules : {len(rules)}")
+    print()
+
+    print(f"Generated : {TOP_CSV.name}")
+    print(f"Generated : {NEW_CSV.name}")
+    print()
+
+
+def main():
 
     REPORT_DIR.mkdir(exist_ok=True)
 
@@ -156,12 +177,7 @@ def main():
 
     save_candidates(counter, rules)
 
-    print(f"Unique Domains : {len(counter)}")
-    print(f"Existing Rules : {len(rules)}")
-    print()
-    print(f"Generated : {TOP_CSV}")
-    print(f"Generated : {NEW_CSV}")
-    print()
+    print_summary(counter, rules)
 
 
 if __name__ == "__main__":
