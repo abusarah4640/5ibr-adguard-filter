@@ -1,5 +1,5 @@
 ! Title: 5ibr Telemetry Filter
-! Description: Blocks telemetry and analytics domains.
+! Description: Blocks telemetry, analytics and tracking domains.
 ! Author: 5ibr
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! Version: 1.0.0
@@ -7,19 +7,25 @@
 ! Expires: 7 days
 
 ! ======================================================================
-! Microsoft
+! Microsoft Telemetry
 ! ======================================================================
 
 ||mobile.events.data.microsoft.com^
 ||settings-win.data.microsoft.com^
 ||v10.events.data.microsoft.com^
+||watson.telemetry.microsoft.com^
+||oca.telemetry.microsoft.com^
 
 ! ======================================================================
-! Google
+! Google Telemetry
 ! ======================================================================
 
 ||app-measurement.com^
 ||firebaselogging-pa.googleapis.com^
+||footprints-pa.googleapis.com^
+||geller-pa.googleapis.com^
+||appsgrowthpromo-pa.googleapis.com^
+||federatedcompute-pa.googleapis.com^
 
 ! ======================================================================
 ! Generic Analytics
