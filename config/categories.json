@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+
+  "filters": [
+    {
+      "file": "ads.txt",
+      "name": "Ads"
+    },
+    {
+      "file": "telemetry.txt",
+      "name": "Telemetry"
+    },
+    {
+      "file": "privacy.txt",
+      "name": "Privacy"
+    },
+    {
+      "file": "social.txt",
+      "name": "Social"
+    },
+    {
+      "file": "mobile.txt",
+      "name": "Mobile"
+    },
+    {
+      "file": "gaming.txt",
+      "name": "Gaming"
+    },
+    {
+      "file": "smart-tv.txt",
+      "name": "Smart TV"
+    }
+  ]
+}
