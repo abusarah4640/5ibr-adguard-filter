@@ -10,6 +10,7 @@ import sys
 from scripts.build import main as build_main
 from scripts.validate import main as validate_main
 from scripts.report import main as report_main
+from scripts.stats import main as stats_main
 
 
 def main():
@@ -36,7 +37,12 @@ def main():
 
     sub.add_parser(
         "report",
-        help="Generate reports"
+        help="Generate project report"
+    )
+
+    sub.add_parser(
+        "stats",
+        help="Show database statistics"
     )
 
     args = parser.parse_args()
@@ -45,10 +51,13 @@ def main():
         build_main()
 
     elif args.command == "validate":
-        validate_main()
+        sys.exit(validate_main())
 
     elif args.command == "report":
         report_main()
+
+    elif args.command == "stats":
+        stats_main()
 
     else:
         parser.print_help()
