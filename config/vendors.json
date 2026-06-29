@@ -1,31 +1,27 @@
 {
-  "Microsoft": {
-    "country": "United States",
-    "website": "https://www.microsoft.com",
-    "type": "Operating System",
-    "category": "Telemetry",
-    "products": [
-      "Windows",
-      "Microsoft Edge",
-      "Xbox",
-      "Office",
-      "OneDrive",
-      "Microsoft Store"
+    "Google": [
+        "Telemetry",
+        "Ads"
+    ],
+    "Huawei": [
+        "Telemetry"
+    ],
+    "LG": [
+        "Smart TV"
+    ],
+    "Meta": [
+        "Social"
+    ],
+    "Microsoft": [
+        "Telemetry"
+    ],
+    "OPPO": [
+        "Telemetry"
+    ],
+    "Riot Games": [
+        "Gaming"
+    ],
+    "Xiaomi": [
+        "Telemetry"
     ]
-  },
-
-  "Google": {
-    "country": "United States",
-    "website": "https://www.google.com",
-    "type": "Internet Services",
-    "category": "Telemetry",
-    "products": [
-      "Android",
-      "Chrome",
-      "Google Play Services",
-      "Firebase",
-      "Google Analytics",
-      "DoubleClick"
-    ]
-  }
 }

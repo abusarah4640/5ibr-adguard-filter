@@ -4,10 +4,10 @@
 5ibr Build System
 """
 
-from builders.database import load_database
-from builders.filters import build_filters
-from builders.config import build_config
-from builders.releases import build_releases
+from scripts.builders.database import load_database
+from scripts.builders.filters import build_filters
+from scripts.builders.config import build_config
+from scripts.builders.releases import build_releases
 
 
 def main():

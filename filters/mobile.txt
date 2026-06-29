@@ -1,43 +1,6 @@
-! Title: 5ibr Mobile Filter
-! Description: Blocks telemetry, ads and tracking for mobile devices.
-! Author: 5ibr
-! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
-! Version: 1.0.0
-! Last modified: 2026-06-28
-! Expires: 7 days
-
-! ======================================================================
-! Android
-! ======================================================================
-
-||connectivitycheck.gstatic.com^
-||play.googleapis.com^
-
-! ======================================================================
-! Xiaomi
-! ======================================================================
-
-||tracking.miui.com^
-||data.mistat.xiaomi.com^
-||sdkconfig.ad.xiaomi.com^
-
-! ======================================================================
-! Samsung
-! ======================================================================
-
-||config.samsungads.com^
-||samsungads.com^
-
-! ======================================================================
-! Huawei
-! ======================================================================
-
+! Title: 5ibr Filter
+! Generated automatically.
+!
 ||metrics.data.hicloud.com^
-||logservice.hicloud.com^
-
-! ======================================================================
-! OPPO / Realme
-! ======================================================================
-
-||adx.ads.oppomobile.com^
 ||tracking.coloros.com^
+||tracking.miui.com^

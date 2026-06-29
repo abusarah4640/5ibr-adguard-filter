@@ -1,0 +1,12 @@
+! Title: 5ibr Gaming Filter
+! Description: Gaming services filter.
+! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
+! License: GPL-3.0
+! Generated automatically.
+!
+
+! ===== GAMING =====
+! Title: 5ibr Filter
+! Generated automatically.
+!
+||telemetry.riotgames.com^

@@ -18,7 +18,7 @@ def load_filters():
     return data["filters"]
 
 
-def validate():
+def main():
 
     print()
     print("==========================================")
@@ -43,7 +43,9 @@ def validate():
         if not path.exists():
 
             print("  ERROR : File not found")
+
             has_errors = True
+
             continue
 
         rules = set()
@@ -99,13 +101,13 @@ def validate():
         print()
         print("Validation FAILED")
 
-        sys.exit(1)
+        return 1
 
     print()
     print("Validation PASSED")
 
-    sys.exit(0)
+    return 0
 
 
 if __name__ == "__main__":
-    validate()
+    sys.exit(main())

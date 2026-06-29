@@ -1,0 +1,27 @@
+! Title: 5ibr Privacy Filter
+! Description: Privacy focused filter.
+! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
+! License: GPL-3.0
+! Generated automatically.
+!
+
+! ===== PRIVACY =====
+! Title: 5ibr Filter
+! Generated automatically.
+!
+||activity.windows.com^
+
+! ===== TELEMETRY =====
+! Title: 5ibr Filter
+! Generated automatically.
+!
+||app-measurement.com^
+||browser.events.data.microsoft.com^
+||firebase-settings.crashlytics.com^
+||firebasecrashlytics.googleapis.com^
+||firebaseinstallations.googleapis.com^
+||firebaselogging.googleapis.com^
+||mobile.events.data.microsoft.com^
+||settings-win.data.microsoft.com^
+||v10.events.data.microsoft.com^
+||watson.telemetry.microsoft.com^

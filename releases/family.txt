@@ -1,5 +1,5 @@
-! Title: 5ibr Home Filter
-! Description: Balanced filter for home users.
+! Title: 5ibr Family Filter
+! Description: Home filter with parental protection.
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! License: GPL-3.0
 ! Generated automatically.

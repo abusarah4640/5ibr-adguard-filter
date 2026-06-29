@@ -1,37 +1,6 @@
-! Title: 5ibr Ads Filter
-! Description: Blocks advertising domains.
-! Author: 5ibr
-! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
-! Version: 1.0.0
-! Last modified: 2026-06-28
-! Expires: 7 days
-
-! ==========================
-! Google Ads
-! ==========================
-
+! Title: 5ibr Filter
+! Generated automatically.
+!
 ||doubleclick.net^
-||googlesyndication.com^
-||googletagservices.com^
-||adservice.google.com^
+||googleads.g.doubleclick.net^
 ||pagead2.googlesyndication.com^
-
-! ==========================
-! Microsoft Ads
-! ==========================
-
-||ads.msn.com^
-||bat.bing.com^
-
-! ==========================
-! Amazon Ads
-! ==========================
-
-||aax.amazon-adsystem.com^
-
-! ==========================
-! Media.net
-! ==========================
-
-||media.net^
-||adservetx.media.net^

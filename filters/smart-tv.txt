@@ -1,28 +1,5 @@
-! Title: 5ibr Smart TV Filter
-! Description: Blocks advertising and telemetry for Smart TVs.
-! Author: 5ibr
-! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
-! Version: 1.0.0
-! Last modified: 2026-06-28
-! Expires: 7 days
-
-! ======================================================================
-! LG Smart TV Advertising
-! ======================================================================
-
-||lgsmartad.com^
-||alphonso.tv^
-
-! ======================================================================
-! LG Smart TV Analytics
-! ======================================================================
-
-||eic.rdl.lgtvcommon.com^
+! Title: 5ibr Filter
+! Generated automatically.
+!
 ||eic.homeprv.lgtvcommon.com^
-||eic.wiseconfig.lgtvcommon.com^
-
-! ======================================================================
-! LG Smart TV Tracking
-! ======================================================================
-
-||snu.lge.com^
+||eic.rdl.lgtvcommon.com^
