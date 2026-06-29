@@ -4,17 +4,19 @@
 5ibr Command Line Interface
 """
 
+from __future__ import annotations
+
 import argparse
 import sys
 
 from scripts.build import main as build_main
-from scripts.validate import main as validate_main
 from scripts.report import main as report_main
-from scripts.stats import main as stats_main
 from scripts.search import main as search_main
+from scripts.stats import main as stats_main
+from scripts.validate import main as validate_main
 
 
-def main():
+def main() -> int:
 
     parser = argparse.ArgumentParser(
         prog="fivebr",
@@ -60,27 +62,24 @@ def main():
 
     if args.command == "build":
         build_main()
+        return 0
 
-    elif args.command == "validate":
-        sys.exit(validate_main())
+    if args.command == "validate":
+        return validate_main()
 
-    elif args.command == "report":
+    if args.command == "report":
         report_main()
+        return 0
 
-    elif args.command == "stats":
-        stats_main()
+    if args.command == "stats":
+        return stats_main(args)
 
-    elif args.command == "search":
-        sys.argv = [
-            "fivebr search",
-            args.domain,
-        ]
-        sys.exit(search_main())
+    if args.command == "search":
+        return search_main(args)
 
-    else:
-        parser.print_help()
-        sys.exit(1)
+    parser.print_help()
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

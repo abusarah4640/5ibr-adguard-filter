@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
+"""
+5ibr Database Statistics
+"""
+
 from scripts.database import database_stats
 
 
-def main():
+def main(args=None) -> int:
+    """
+    Display database statistics.
+    """
 
     stats = database_stats()
 
@@ -30,3 +37,5 @@ def main():
 
     for category, count in stats["top_categories"]:
         print(f"{category:<20} {count}")
+
+    return 0
