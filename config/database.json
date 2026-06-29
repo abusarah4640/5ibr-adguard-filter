@@ -1,0 +1,23 @@
+{
+    "categories": [
+        "Ads",
+        "Telemetry",
+        "Privacy",
+        "Social",
+        "Gaming",
+        "Smart TV"
+    ],
+    "filters": [
+        "ads",
+        "telemetry",
+        "privacy",
+        "social",
+        "gaming",
+        "smart-tv"
+    ],
+    "confidence": {
+        "min": 0,
+        "max": 100,
+        "default": 100
+    }
+}
