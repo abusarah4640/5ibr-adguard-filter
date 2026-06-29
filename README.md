@@ -1,34 +1,68 @@
 # 5ibr AdGuard Filter
 
-Custom AdGuard Home filter maintained by 5ibr.
+An open-source AdGuard Home filter project focused on privacy, security, telemetry blocking and gaming.
 
 ## Features
 
-- Ads blocking
-- Telemetry blocking
-- Privacy protection
-- Mobile tracking protection
-- Gaming telemetry blocking
-- Smart TV tracking blocking
-- Social tracking blocking
+- Modular filter generation
+- Automatic release generation
+- Database-driven domain management
+- CLI toolkit
+- Validation system
+- Statistics and reporting
 
-## Filter Lists
+## Installation
 
-- Ads
-- Telemetry
-- Privacy
-- Social
-- Mobile
-- Gaming
-- Smart TV
-- Whitelist
+```bash
+git clone https://github.com/abusarah4640/5ibr-adguard-filter.git
+cd 5ibr-adguard-filter
+python fivebr.py build
+```
 
-## Main Release
+## Commands
+
+```bash
+python fivebr.py build
+python fivebr.py validate
+python fivebr.py report
+python fivebr.py stats
+python fivebr.py search <domain>
+```
+
+## Project Structure
 
 ```
-https://raw.githubusercontent.com/abusarah4640/5ibr-adguard-filter/main/releases/home.txt
+config/
+database/
+docs/
+filters/
+releases/
+scripts/
+tests/
 ```
+
+## Roadmap
+
+### v0.2.0
+
+- Database Manager
+- CLI
+- Search
+- Stats
+- Add
+- Remove
+- Update
+
+### v0.3.0
+
+- Analyzer
+- Reports
+- HTML Dashboard
+
+### v1.0.0
+
+- Stable Release
 
 ## License
 
-GPL-3.0
+MIT License
