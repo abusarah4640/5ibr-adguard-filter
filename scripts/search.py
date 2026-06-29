@@ -6,13 +6,24 @@
 
 from __future__ import annotations
 
+import argparse
+
 from scripts.database import search_domain
 
 
-def main(args) -> int:
-    """
-    Search for a domain in the database.
-    """
+def main() -> int:
+
+    parser = argparse.ArgumentParser(
+        prog="fivebr search",
+        description="Search for a domain in the database",
+    )
+
+    parser.add_argument(
+        "domain",
+        help="Domain to search for",
+    )
+
+    args = parser.parse_args()
 
     result = search_domain(args.domain)
 
@@ -36,14 +47,4 @@ def main(args) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(
-        main(
-            type(
-                "Args",
-                (),
-                {
-                    "domain": input("Domain: ").strip()
-                },
-            )()
-        )
-    )
+    raise SystemExit(main())

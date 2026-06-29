@@ -50,7 +50,7 @@ def clean_file(path):
 
 def main():
 
-    config = load_config()
+    load_config()
 
     print()
     print("======================================")
@@ -60,18 +60,13 @@ def main():
 
     total = 0
 
-    for item in config["filters"]:
-
-        path = FILTER_DIR / item["file"]
-
-        if not path.exists():
-            continue
+    for path in sorted(FILTER_DIR.glob("*.txt")):
 
         count = clean_file(path)
 
         total += count
 
-        print(f"[FIXED] {item['name']:<20} {count:>6} rules")
+        print(f"[FIXED] {path.stem:<20} {count:>6} rules")
 
     print()
     print("--------------------------------------")

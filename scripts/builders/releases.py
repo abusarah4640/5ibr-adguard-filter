@@ -45,8 +45,10 @@ def build_releases():
             filter_file = FILTERS_DIR / f"{filter_name}.txt"
 
             if not filter_file.exists():
-                print(f"Warning: {filter_name}.txt not found")
-                continue
+                raise FileNotFoundError(
+                    f"Release '{release_name}' references missing filter: "
+                    f"{filter_name}.txt"
+                )
 
             output.append(
                 f"! ===== {filter_name.upper()} ====="
