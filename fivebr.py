@@ -11,38 +11,49 @@ from scripts.build import main as build_main
 from scripts.validate import main as validate_main
 from scripts.report import main as report_main
 from scripts.stats import main as stats_main
+from scripts.search import main as search_main
 
 
 def main():
 
     parser = argparse.ArgumentParser(
         prog="fivebr",
-        description="5ibr AdGuard Filter Toolkit"
+        description="5ibr AdGuard Filter Toolkit",
     )
 
     sub = parser.add_subparsers(
         dest="command",
-        required=True
+        required=True,
     )
 
     sub.add_parser(
         "build",
-        help="Build filters, configs and releases"
+        help="Build filters, configs and releases",
     )
 
     sub.add_parser(
         "validate",
-        help="Validate generated filters"
+        help="Validate generated filters",
     )
 
     sub.add_parser(
         "report",
-        help="Generate project report"
+        help="Generate project report",
     )
 
     sub.add_parser(
         "stats",
-        help="Show database statistics"
+        help="Show database statistics",
+    )
+
+    search_parser = sub.add_parser(
+        "search",
+        help="Search for a domain",
+    )
+
+    search_parser.add_argument(
+        "domain",
+        help="Domain to search for",
     )
 
     args = parser.parse_args()
@@ -58,6 +69,13 @@ def main():
 
     elif args.command == "stats":
         stats_main()
+
+    elif args.command == "search":
+        sys.argv = [
+            "fivebr search",
+            args.domain,
+        ]
+        sys.exit(search_main())
 
     else:
         parser.print_help()
