@@ -1,20 +1,30 @@
 {
-    "categories": [
-        "Ads",
-        "Telemetry",
-        "Privacy",
-        "Social",
-        "Gaming",
-        "Smart TV"
-    ],
-    "filters": [
-        "ads",
-        "telemetry",
-        "privacy",
-        "social",
-        "gaming",
-        "smart-tv"
-    ],
+    "categories": {
+        "ads": {
+            "name": "Ads",
+            "filter": "ads"
+        },
+        "telemetry": {
+            "name": "Telemetry",
+            "filter": "telemetry"
+        },
+        "privacy": {
+            "name": "Privacy",
+            "filter": "privacy"
+        },
+        "social": {
+            "name": "Social",
+            "filter": "social"
+        },
+        "gaming": {
+            "name": "Gaming",
+            "filter": "gaming"
+        },
+        "smart-tv": {
+            "name": "Smart TV",
+            "filter": "smart-tv"
+        }
+    },
     "confidence": {
         "min": 0,
         "max": 100,
