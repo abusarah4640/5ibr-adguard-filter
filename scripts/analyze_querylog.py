@@ -9,8 +9,9 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from classifier import DomainClassifier
-from filter_loader import load_existing_rules
+from scripts.cli import parse_no_args
+from scripts.classifier import DomainClassifier
+from scripts.filter_loader import load_existing_rules
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -132,7 +133,14 @@ def write_reports(counter, rules):
             rank += 1
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Analyze an AdGuard query log and write candidate reports."""
+
+    parse_no_args(
+        prog="fivebr analyze-querylog",
+        description="Analyze querylog.json",
+        argv=argv,
+    )
 
     rules = load_existing_rules()
 
@@ -153,6 +161,8 @@ def main():
     print("Reports generated successfully.")
     print()
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

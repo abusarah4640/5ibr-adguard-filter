@@ -22,6 +22,37 @@ FIELDNAMES = [
 ]
 
 
+def get_database_fieldnames(rows: list[dict] | None = None) -> list[str]:
+    """
+    Return the complete CSV schema, preserving existing metadata columns.
+    """
+
+    fieldnames: list[str] = []
+
+    if DATABASE.exists():
+        with DATABASE.open(
+            "r",
+            newline="",
+            encoding="utf-8",
+        ) as file:
+            reader = csv.DictReader(file)
+
+            if reader.fieldnames:
+                fieldnames.extend(reader.fieldnames)
+
+    if rows:
+        for row in rows:
+            for field in row:
+                if field not in fieldnames:
+                    fieldnames.append(field)
+
+    for field in FIELDNAMES:
+        if field not in fieldnames:
+            fieldnames.append(field)
+
+    return fieldnames
+
+
 def load_database() -> list[dict]:
     """
     Load all records from the CSV database.
@@ -40,8 +71,10 @@ def load_database() -> list[dict]:
 
 def save_database(rows: list[dict]) -> None:
     """
-    Save all records to the CSV database.
+    Save all records to the CSV database without dropping metadata columns.
     """
+
+    fieldnames = get_database_fieldnames(rows)
 
     with DATABASE.open(
         "w",
@@ -51,11 +84,18 @@ def save_database(rows: list[dict]) -> None:
 
         writer = csv.DictWriter(
             file,
-            fieldnames=FIELDNAMES,
+            fieldnames=fieldnames,
+            extrasaction="ignore",
         )
 
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(
+            {
+                field: row.get(field, "")
+                for field in fieldnames
+            }
+            for row in rows
+        )
 
 
 def sort_database(rows: list[dict]) -> list[dict]:
@@ -74,7 +114,7 @@ def search_domain(domain: str) -> dict | None:
     Search for a domain.
     """
 
-    domain = domain.lower()
+    domain = domain.strip().lower()
 
     for row in load_database():
 
@@ -102,6 +142,10 @@ def add_domain(
 
     rows.append(
         {
+            field: ""
+            for field in get_database_fieldnames(rows)
+        }
+        | {
             "Domain": domain.strip(),
             "Vendor": vendor.strip(),
             "Category": category.strip(),

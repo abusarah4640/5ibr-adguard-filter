@@ -1,86 +1,76 @@
 #!/usr/bin/env python3
 
-"""
-5ibr Command Line Interface
-"""
+"""Command router for the 5ibr AdGuard Filter Toolkit."""
+
+from __future__ import annotations
 
 import argparse
-import sys
+from collections.abc import Callable
 
+from scripts.add import main as add_main
 from scripts.build import main as build_main
-from scripts.validate import main as validate_main
+from scripts.remove import main as remove_main
 from scripts.report import main as report_main
-from scripts.stats import main as stats_main
 from scripts.search import main as search_main
+from scripts.stats import main as stats_main
+from scripts.validate import main as validate_main
+
+CommandHandler = Callable[[list[str] | None], int]
+
+COMMANDS: dict[str, CommandHandler] = {
+    "build": build_main,
+    "validate": validate_main,
+    "report": report_main,
+    "stats": stats_main,
+    "search": search_main,
+    "add": add_main,
+    "remove": remove_main,
+}
+
+COMMAND_HELP: dict[str, str] = {
+    "build": "Build filters, configs and releases",
+    "validate": "Validate generated filters",
+    "report": "Generate project report",
+    "stats": "Show database statistics",
+    "search": "Search for a domain",
+    "add": "Add a domain",
+    "remove": "Remove a domain",
+}
 
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
+    """Create the top-level router parser."""
 
     parser = argparse.ArgumentParser(
         prog="fivebr",
         description="5ibr AdGuard Filter Toolkit",
     )
 
-    sub = parser.add_subparsers(
+    subparsers = parser.add_subparsers(
         dest="command",
         required=True,
     )
 
-    sub.add_parser(
-        "build",
-        help="Build filters, configs and releases",
-    )
+    for name in COMMANDS:
+        subparsers.add_parser(
+            name,
+            help=COMMAND_HELP[name],
+            add_help=False,
+        )
 
-    sub.add_parser(
-        "validate",
-        help="Validate generated filters",
-    )
+    return parser
 
-    sub.add_parser(
-        "report",
-        help="Generate project report",
-    )
 
-    sub.add_parser(
-        "stats",
-        help="Show database statistics",
-    )
+def main(argv: list[str] | None = None) -> int:
+    """Route a command name to its command module."""
 
-    search_parser = sub.add_parser(
-        "search",
-        help="Search for a domain",
-    )
+    parser = build_parser()
+    args, command_argv = parser.parse_known_args(argv)
 
-    search_parser.add_argument(
-        "domain",
-        help="Domain to search for",
-    )
+    command = COMMANDS[args.command]
 
-    args = parser.parse_args()
-
-    if args.command == "build":
-        build_main()
-
-    elif args.command == "validate":
-        sys.exit(validate_main())
-
-    elif args.command == "report":
-        report_main()
-
-    elif args.command == "stats":
-        stats_main()
-
-    elif args.command == "search":
-        sys.argv = [
-            "fivebr search",
-            args.domain,
-        ]
-        sys.exit(search_main())
-
-    else:
-        parser.print_help()
-        sys.exit(1)
+    return command(command_argv)
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

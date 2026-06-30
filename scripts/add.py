@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 from scripts.database import (
     add_domain,
@@ -16,17 +15,17 @@ from scripts.database import (
 
 
 def _ask(prompt: str, value: str | None) -> str:
-    """
-    Return CLI value if provided, otherwise ask interactively.
-    """
+    """Return a CLI value if provided, otherwise ask interactively."""
 
     if value:
         return value.strip()
 
-    return input(f"{prompt}: ").strip()
+    print(f"{prompt}:")
+    return input().strip()
 
 
-def main(argv=None) -> int:
+def main(argv: list[str] | None = None) -> int:
+    """Add a domain to the database."""
 
     parser = argparse.ArgumentParser(
         prog="fivebr add",
@@ -72,7 +71,8 @@ def main(argv=None) -> int:
 
         while True:
 
-            value = input("Confidence: ").strip()
+            print("Confidence:")
+            value = input().strip()
 
             try:
 
@@ -105,10 +105,10 @@ def main(argv=None) -> int:
         return 1
 
     print()
-    print("✓ Domain added successfully.")
+    print("Domain added successfully.")
 
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

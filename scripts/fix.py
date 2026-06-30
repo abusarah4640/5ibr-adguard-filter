@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 
+from scripts.cli import parse_no_args
+
 ROOT = Path(__file__).resolve().parent.parent
 
 CONFIG_FILE = ROOT / "config" / "categories.json"
@@ -48,7 +50,14 @@ def clean_file(path):
     return len(rules)
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Normalize filter files by preserving comments and sorting rules."""
+
+    parse_no_args(
+        prog="fivebr fix",
+        description="Normalize filter files",
+        argv=argv,
+    )
 
     load_config()
 
@@ -74,6 +83,8 @@ def main():
     print("--------------------------------------")
     print()
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
