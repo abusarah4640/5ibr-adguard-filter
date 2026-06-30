@@ -9,6 +9,8 @@ Loads all existing rules from filters/*.txt
 
 from pathlib import Path
 
+from scripts.cli import parse_no_args
+
 ROOT = Path(__file__).resolve().parent.parent
 FILTERS_DIR = ROOT / "filters"
 
@@ -52,7 +54,14 @@ def load_existing_rules():
     return rules
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Print the number of currently loaded filter rules."""
+
+    parse_no_args(
+        prog="fivebr filter-loader",
+        description="Load existing filter rules",
+        argv=argv,
+    )
 
     rules = load_existing_rules()
 
@@ -63,6 +72,8 @@ def main():
     print(f"Loaded {len(rules)} rules.")
     print()
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

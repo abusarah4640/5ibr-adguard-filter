@@ -11,7 +11,8 @@ import argparse
 from scripts.database import search_domain
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    """Search the domain database."""
 
     parser = argparse.ArgumentParser(
         prog="fivebr search",
@@ -23,7 +24,7 @@ def main() -> int:
         help="Domain to search for",
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     result = search_domain(args.domain)
 

@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
 
-"""
-5ibr Build System
-"""
+"""Build command for the 5ibr AdGuard Filter Toolkit."""
 
+from __future__ import annotations
+
+from scripts.builders.config import build_config
 from scripts.builders.database import load_database
 from scripts.builders.filters import build_filters
-from scripts.builders.config import build_config
 from scripts.builders.releases import build_releases
+from scripts.cli import parse_no_args
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Build filters, generated config files and release bundles."""
+
+    parse_no_args(
+        prog="fivebr build",
+        description="Build filters, configs and releases",
+        argv=argv,
+    )
 
     print("===================================")
     print("5ibr Filter Build System")
@@ -40,6 +48,8 @@ def main():
     print("Build completed successfully.")
     print("===================================")
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -4,6 +4,8 @@ import csv
 import html as html_utils
 from pathlib import Path
 
+from scripts.cli import parse_no_args
+
 ROOT = Path(__file__).resolve().parent.parent
 
 REPORTS = ROOT / "reports"
@@ -131,7 +133,14 @@ tr:nth-child(even){
     return html
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Generate an HTML report from query-log analysis candidates."""
+
+    parse_no_args(
+        prog="fivebr html-report",
+        description="Generate an HTML report",
+        argv=argv,
+    )
 
     rows = load_rows()
 
@@ -148,6 +157,8 @@ def main():
     print(f"Generated : {OUTPUT}")
     print()
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

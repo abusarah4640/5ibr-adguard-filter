@@ -5,8 +5,10 @@
 """
 
 import csv
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
+
+from scripts.cli import parse_no_args
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -21,7 +23,8 @@ VENDORS_CSV = REPORT_DIR / "vendors.csv"
 CATEGORIES_CSV = REPORT_DIR / "categories.csv"
 
 
-def load_candidates():
+def load_candidates() -> list[dict[str, str]]:
+    """Load analyzer candidate rows if present."""
 
     rows = []
 
@@ -38,7 +41,8 @@ def load_candidates():
     return rows
 
 
-def write_summary(rows):
+def write_summary(rows: list[dict[str, str]]) -> None:
+    """Write the Markdown summary report."""
 
     vendors = Counter()
     categories = Counter()
@@ -67,7 +71,8 @@ def write_summary(rows):
             f.write(f"- {category}: {count}\n")
 
 
-def write_vendor_csv(rows):
+def write_vendor_csv(rows: list[dict[str, str]]) -> None:
+    """Write vendor frequency statistics."""
 
     counter = Counter()
 
@@ -85,7 +90,8 @@ def write_vendor_csv(rows):
             writer.writerow([vendor, count])
 
 
-def write_category_csv(rows):
+def write_category_csv(rows: list[dict[str, str]]) -> None:
+    """Write category frequency statistics."""
 
     counter = Counter()
 
@@ -103,7 +109,14 @@ def write_category_csv(rows):
             writer.writerow([category, count])
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Generate report files from query-log analysis candidates."""
+
+    parse_no_args(
+        prog="fivebr report",
+        description="Generate project report",
+        argv=argv,
+    )
 
     REPORT_DIR.mkdir(exist_ok=True)
 
@@ -131,7 +144,9 @@ def main():
 
     print()
 
+    return 0
+
 
 if __name__ == "__main__":
 
-    main()
+    raise SystemExit(main())

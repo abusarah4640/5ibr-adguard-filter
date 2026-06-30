@@ -45,7 +45,7 @@ jobs:
       - name: Analyze Query Log (Optional)
         run: |
           if [ -f querylog.json ]; then
-            python scripts/analyze_querylog.py
+            python -m scripts.analyze_querylog
           else
             echo "querylog.json not found, skipping analysis."
           fi
@@ -54,6 +54,7 @@ jobs:
         run: |
           if [ -f reports/new_candidates.csv ]; then
             python fivebr.py report
+            python -m scripts.html_report
           else
             echo "No analysis results found, skipping reports."
           fi

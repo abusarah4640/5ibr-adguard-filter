@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import json
-import sys
 from pathlib import Path
+
+from scripts.cli import parse_no_args
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -10,7 +11,8 @@ RELEASES_CONFIG = ROOT / "config" / "releases.json"
 FILTERS = ROOT / "filters"
 
 
-def load_release_filters():
+def load_release_filters() -> list[str]:
+    """Return the filter names referenced by release definitions."""
 
     with open(RELEASES_CONFIG, encoding="utf-8") as f:
         data = json.load(f)
@@ -23,7 +25,8 @@ def load_release_filters():
     return sorted(names)
 
 
-def load_filter_files():
+def load_filter_files() -> dict[str, Path]:
+    """Return every filter file that should be validated."""
 
     files = {path.stem: path for path in FILTERS.glob("*.txt")}
 
@@ -33,7 +36,14 @@ def load_filter_files():
     return dict(sorted(files.items()))
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    """Validate filter files for missing files and duplicate rules."""
+
+    parse_no_args(
+        prog="fivebr validate",
+        description="Validate generated filters",
+        argv=argv,
+    )
 
     print()
     print("==========================================")
@@ -123,4 +133,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
