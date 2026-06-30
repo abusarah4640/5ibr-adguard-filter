@@ -14,11 +14,9 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -34,7 +32,7 @@ jobs:
 
       - name: Validate Filters
         run: |
-          python scripts/validate.py
+          python fivebr.py validate
 
       - name: Run Unit Tests
         run: |
@@ -42,7 +40,7 @@ jobs:
 
       - name: Build Releases
         run: |
-          python scripts/build.py
+          python fivebr.py build
 
       - name: Analyze Query Log (Optional)
         run: |
@@ -55,8 +53,7 @@ jobs:
       - name: Generate Reports
         run: |
           if [ -f reports/new_candidates.csv ]; then
-            python scripts/report.py
-            python scripts/html_report.py
+            python fivebr.py report
           else
             echo "No analysis results found, skipping reports."
           fi
