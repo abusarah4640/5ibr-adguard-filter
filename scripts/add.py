@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 
 from scripts.database import (
     add_domain,
@@ -20,8 +21,10 @@ def _ask(prompt: str, value: str | None) -> str:
     if value:
         return value.strip()
 
-    print(f"{prompt}:")
-    return input().strip()
+    sys.stdout.write(f"{prompt}: ")
+    sys.stdout.flush()
+
+    return sys.stdin.readline().strip()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -71,8 +74,9 @@ def main(argv: list[str] | None = None) -> int:
 
         while True:
 
-            print("Confidence:")
-            value = input().strip()
+            sys.stdout.write("Confidence: ")
+            sys.stdout.flush()
+            value = sys.stdin.readline().strip()
 
             try:
 
