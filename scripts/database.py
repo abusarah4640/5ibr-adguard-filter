@@ -165,11 +165,12 @@ def remove_domain(domain: str) -> bool:
     """
 
     rows = load_database()
+    domain = domain.strip().lower()
 
     filtered = [
         row
         for row in rows
-        if row["Domain"].lower() != domain.lower()
+        if row["Domain"].lower() != domain
     ]
 
     if len(filtered) == len(rows):
@@ -192,12 +193,13 @@ def update_domain(
     """
 
     rows = load_database()
+    domain = domain.strip().lower()
 
     updated = False
 
     for row in rows:
 
-        if row["Domain"].lower() == domain.lower():
+        if row["Domain"].lower() == domain:
 
             row["Vendor"] = vendor
             row["Category"] = category

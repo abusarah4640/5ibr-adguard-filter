@@ -12,6 +12,7 @@ def test_command_registry_contains_supported_commands():
         "report",
         "search",
         "stats",
+        "update",
         "validate",
     }
 
@@ -30,3 +31,10 @@ def test_router_dispatches_command_argv_without_mutating_sys_argv(monkeypatch):
     assert fivebr.main(["search", "example.com"]) == 0
     assert received == [["example.com"]]
     assert sys.argv == original_argv
+
+
+def test_update_command_appears_in_help():
+
+    help_text = fivebr.build_parser().format_help()
+
+    assert "update" in help_text

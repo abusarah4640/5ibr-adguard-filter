@@ -13,6 +13,7 @@ from scripts.remove import main as remove_main
 from scripts.report import main as report_main
 from scripts.search import main as search_main
 from scripts.stats import main as stats_main
+from scripts.update import main as update_main
 from scripts.validate import main as validate_main
 
 CommandHandler = Callable[[list[str] | None], int]
@@ -25,6 +26,7 @@ COMMANDS: dict[str, CommandHandler] = {
     "search": search_main,
     "add": add_main,
     "remove": remove_main,
+    "update": update_main,
 }
 
 COMMAND_HELP: dict[str, str] = {
@@ -35,6 +37,7 @@ COMMAND_HELP: dict[str, str] = {
     "search": "Search for a domain",
     "add": "Add a domain",
     "remove": "Remove a domain",
+    "update": "Update a domain",
 }
 
 

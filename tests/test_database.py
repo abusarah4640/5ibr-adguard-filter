@@ -1,3 +1,5 @@
+from io import StringIO
+
 from scripts import database
 import fivebr
 
@@ -101,30 +103,70 @@ def test_add_interactive_prompts_are_rendered_once(monkeypatch, tmp_path, capsys
         encoding="utf-8",
     )
 
-    answers = iter(
-        [
-            "prompt.example",
-            "Example",
-            "Telemetry",
-            "telemetry",
-            "75",
-        ]
+    monkeypatch.setattr(
+        "sys.stdin",
+        StringIO("prompt.example\nExample\nTelemetry\ntelemetry\n75\n"),
     )
 
     monkeypatch.setattr(database, "DATABASE", csv_file)
-    monkeypatch.setattr("builtins.input", lambda: next(answers))
 
     assert fivebr.main(["add"]) == 0
 
     output = capsys.readouterr().out
+    content = csv_file.read_text(encoding="utf-8")
 
     assert "Domain: Domain:" not in output
     assert "Vendor: Vendor:" not in output
     assert "Category: Category:" not in output
     assert "Filter: Filter:" not in output
     assert "Confidence: Confidence:" not in output
-    assert "Domain:\n" in output
-    assert "Vendor:\n" in output
-    assert "Category:\n" in output
-    assert "Filter:\n" in output
-    assert "Confidence:\n" in output
+    assert output.count("Domain:") == 1
+    assert output.count("Vendor:") == 1
+    assert output.count("Category:") == 1
+    assert output.count("Filter:") == 1
+    assert output.count("Confidence:") == 1
+    assert "prompt.example,Example,Telemetry,telemetry,75,,," in content
+
+
+def test_cli_add_update_search_remove_interactive_workflow(monkeypatch, tmp_path, capsys):
+
+    csv_file = tmp_path / "domains.csv"
+    csv_file.write_text(
+        "Domain,Vendor,Category,Filter,Confidence,Status,Source,Notes\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(database, "DATABASE", csv_file)
+    monkeypatch.setattr(
+        "sys.stdin",
+        StringIO("test.example\nTest\nAds\nads\n100\n"),
+    )
+
+    assert fivebr.main(["add"]) == 0
+
+    assert fivebr.main(["search", "test.example"]) == 0
+    output = capsys.readouterr().out
+    assert "Vendor      : Test" in output
+    assert "Category    : Ads" in output
+    assert "Filter      : ads" in output
+    assert "Confidence  : 100" in output
+
+    answers = iter(["test.example", "", "", "", "95"])
+    monkeypatch.setattr("builtins.input", lambda: next(answers))
+
+    assert fivebr.main(["update"]) == 0
+
+    assert fivebr.main(["search", "test.example"]) == 0
+    output = capsys.readouterr().out
+    assert "Vendor      : Test" in output
+    assert "Category    : Ads" in output
+    assert "Filter      : ads" in output
+    assert "Confidence  : 95" in output
+
+    monkeypatch.setattr("builtins.input", lambda: "y")
+
+    assert fivebr.main(["remove", "test.example"]) == 0
+
+    assert fivebr.main(["search", "test.example"]) == 1
+    output = capsys.readouterr().out
+    assert "Domain not found." in output
