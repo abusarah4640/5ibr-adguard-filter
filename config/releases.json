@@ -15,7 +15,7 @@
 
     "family": {
         "title": "5ibr Family Filter",
-        "description": "Home filter with parental protection.",
+        "description": "Balanced filter for family devices.",
         "filters": [
             "ads",
             "privacy",
@@ -23,8 +23,7 @@
             "social",
             "mobile",
             "gaming",
-            "smart-tv",
-            "parental"
+            "smart-tv"
         ]
     },
 

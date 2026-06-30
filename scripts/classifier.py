@@ -24,24 +24,28 @@ class DomainClassifier:
 
         domain = domain.lower()
 
-        for vendor, data in self.signatures.items():
+        for pattern, data in self.signatures.items():
 
-            for pattern in data["patterns"]:
+            pattern = pattern.lower()
 
-                if pattern.lower() in domain:
+            if domain == pattern or domain.endswith("." + pattern):
 
-                    vendor_info = self.vendors.get(vendor, {})
+                vendor = data.get("vendor", "Unknown")
+                vendor_info = self.vendors.get(vendor, {})
 
-                    return {
-                        "vendor": vendor,
-                        "category": data["category"],
-                        "confidence": data["confidence"],
-                        "country": vendor_info.get("country"),
-                        "website": vendor_info.get("website"),
-                        "type": vendor_info.get("type"),
-                        "products": vendor_info.get("products", []),
-                        "matched_pattern": pattern
-                    }
+                if isinstance(vendor_info, list):
+                    vendor_info = {"products": [], "categories": vendor_info}
+
+                return {
+                    "vendor": vendor,
+                    "category": data.get("category", "unknown").lower(),
+                    "confidence": data.get("confidence", 0),
+                    "country": vendor_info.get("country"),
+                    "website": vendor_info.get("website"),
+                    "type": vendor_info.get("type"),
+                    "products": vendor_info.get("products", []),
+                    "matched_pattern": pattern
+                }
 
         return {
             "vendor": "Unknown",

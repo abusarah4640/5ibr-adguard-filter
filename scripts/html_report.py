@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import csv
+import html as html_utils
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -92,20 +93,27 @@ tr:nth-child(even){
 
     for row in rows:
 
+        requests = html_utils.escape(row["Requests"])
+        vendor = html_utils.escape(row["Vendor"])
+        category = html_utils.escape(row["Category"])
+        confidence = html_utils.escape(row["Confidence"])
+        domain = html_utils.escape(row["Domain"])
+        suggested_rule = html_utils.escape(row["Suggested Rule"])
+
         html += f"""
 <tr>
 
-<td>{row['Requests']}</td>
+<td>{requests}</td>
 
-<td>{row['Vendor']}</td>
+<td>{vendor}</td>
 
-<td><span class="badge">{row['Category']}</span></td>
+<td><span class="badge">{category}</span></td>
 
-<td>{row['Confidence']}%</td>
+<td>{confidence}%</td>
 
-<td>{row['Domain']}</td>
+<td>{domain}</td>
 
-<td><code>{row['Suggested Rule']}</code></td>
+<td><code>{suggested_rule}</code></td>
 
 </tr>
 """

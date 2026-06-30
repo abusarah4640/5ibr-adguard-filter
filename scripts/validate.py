@@ -6,16 +6,31 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-CONFIG = ROOT / "config" / "categories.json"
+RELEASES_CONFIG = ROOT / "config" / "releases.json"
 FILTERS = ROOT / "filters"
 
 
-def load_filters():
+def load_release_filters():
 
-    with open(CONFIG, encoding="utf-8") as f:
+    with open(RELEASES_CONFIG, encoding="utf-8") as f:
         data = json.load(f)
 
-    return data["filters"]
+    names = set()
+
+    for release in data.values():
+        names.update(release.get("filters", []))
+
+    return sorted(names)
+
+
+def load_filter_files():
+
+    files = {path.stem: path for path in FILTERS.glob("*.txt")}
+
+    for name in load_release_filters():
+        files.setdefault(name, FILTERS / f"{name}.txt")
+
+    return dict(sorted(files.items()))
 
 
 def main():
@@ -32,11 +47,9 @@ def main():
 
     total_rules = 0
 
-    for item in load_filters():
+    for name, path in load_filter_files().items():
 
-        filename = item["file"]
-
-        path = FILTERS / filename
+        filename = path.name
 
         print(f"Checking {filename}")
 
