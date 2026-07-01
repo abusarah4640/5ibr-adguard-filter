@@ -1,674 +1,224 @@
-فكرة ممتازة. وصلنا إلى مرحلة أصبح فيها المشروع كبيرًا، ومن الأفضل أن يكون لديك **ملف مرجعي (Master Context)** تستطيع لصقه في أي محادثة جديدة مع ChatGPT أو Codex ليعرف المشروع بالكامل ويكمل منه مباشرة.
-
----
-
 # 5ibr AdGuard Filter Toolkit
 
-## Master Project Context (June 2026)
+## Master Project Context / Project Dashboard
 
----
+Last updated: Phase 4 - Project Stabilization
 
-# 1. المشروع
+## Current Status
 
-اسم المشروع:
+| Field | Value |
+| --- | --- |
+| Project | 5ibr AdGuard Filter Toolkit |
+| Current Version | v1.0.0-beta |
+| Current Phase | Phase 4 - Project Stabilization |
+| Release Status | Beta candidate |
+| Source of Truth | `database/domains.csv` |
+| CLI Entry | `fivebr.py` |
+| Architecture | CLI → Services → Database → CSV |
+| Current Milestone | Stabilize documentation, specs, ADR and release notes |
+| Known Critical Issues | None after Phase 3 interactive add regression fix |
+| Next Sprint | Release readiness checklist and v1.0.0 preparation |
 
-**5ibr AdGuard Filter Toolkit**
+## Verification Commands
 
-الهدف:
-
-إنشاء مشروع احترافي مفتوح المصدر لإنتاج فلاتر AdGuard عالية الجودة تعتمد على قاعدة بيانات منظمة بدلاً من ملفات نصية فقط.
-
-الفكرة الأساسية:
-
+```bash
+pytest -q
+python fivebr.py build
+python fivebr.py validate
+python fivebr.py doctor
 ```
-CSV Database
-        ↓
+
+## Architecture
+
+```text
+fivebr.py
+    ↓
+CLI Commands
+    ↓
+Services
+    ↓
+Database
+    ↓
+CSV
+    ↓
 Build System
-        ↓
+    ↓
 Filters
-        ↓
-Configs
-        ↓
+    ↓
 Releases
 ```
 
----
+## Project Goal
 
-# 2. أهداف المشروع
+Build a professional open-source AdGuard Home filter toolkit based on a structured database instead of manually maintained text files.
 
-المشروع ليس مجرد فلتر.
+The project is not only a blocklist. It is a small platform for:
 
-الهدف النهائي هو إنشاء:
+- Domain database management.
+- Filter generation.
+- Validation.
+- Reports.
+- Review workflow.
+- Release packaging.
+- Community contribution readiness.
 
-* قاعدة بيانات Domains
-* Build System
-* Validation
-* Reports
-* CLI Toolkit
-* GitHub Actions
-* Releases
-* Documentation
-* Open Source Project
+## Directory Structure
 
----
-
-# 3. هيكل المشروع
-
-```
+```text
 fivebr.py
-
 scripts/
-
-builders/
-
+    services/
 database/
-
 filters/
-
 config/
-
 releases/
-
+reports/
 tests/
-
 docs/
-
+    specs/
+    adr/
+    releases/
 .github/
 ```
 
----
+## Database Contract
 
-# 4. قاعدة البيانات
+Canonical database:
 
-الملف الرئيسي:
-
-```
+```text
 database/domains.csv
 ```
 
-الأعمدة:
+Core columns:
 
-```
+```text
 Domain
 Vendor
 Category
 Filter
 Confidence
 Status
+```
+
+Standard metadata:
+
+```text
+Created
+Updated
+Reviewer
 Source
+Evidence
 Notes
 ```
 
-مهم جداً:
+Important rule: unknown CSV columns must be preserved by all read/write operations.
 
-قد يتم إضافة أعمدة مستقبلية.
+## Stable CLI Commands
 
-لذلك لا يسمح لأي كود بحذف أعمدة غير معروفة.
-
-Database API يحافظ على جميع Metadata.
-
----
-
-# 5. Build System
-
-الأمر:
-
-```
+```bash
 python fivebr.py build
-```
-
-يبني:
-
-```
-filters/
-
-config/
-
-releases/
-```
-
----
-
-# 6. Validation
-
-```
 python fivebr.py validate
-```
-
-يفحص:
-
-* duplicate rules
-* syntax
-* release consistency
-
----
-
-# 7. Search
-
-```
-python fivebr.py search DOMAIN
-```
-
-يعرض:
-
-Vendor
-
-Category
-
-Filter
-
-Confidence
-
----
-
-# 8. Statistics
-
-```
 python fivebr.py stats
-```
-
-يعرض:
-
-عدد الدومينات
-
-أفضل Vendors
-
-أفضل Categories
-
----
-
-# 9. Report
-
-```
 python fivebr.py report
-```
-
-ينشئ تقارير المشروع.
-
----
-
-# 10. CRUD
-
-تم الانتهاء بالكامل.
-
-### Add
-
-```
+python fivebr.py search DOMAIN
 python fivebr.py add
-```
-
-Interactive
-
-CLI
-
-اختبارات كاملة
-
----
-
-### Search
-
-```
-python fivebr.py search
-```
-
----
-
-### Update
-
-```
-python fivebr.py update
-```
-
-يدعم:
-
-Interactive
-
-CLI
-
-Partial Update
-
-يحافظ على Metadata
-
----
-
-### Remove
-
-```
-python fivebr.py remove
-```
-
-يعرض البيانات
-
-يطلب تأكيد
-
-يحذف
-
----
-
-# 11. CLI Architecture
-
-تم إعادة هيكلته بالكامل.
-
-fivebr.py أصبح:
-
-Command Router فقط.
-
-لا يحتوي على if/elif طويلة.
-
-يعتمد على:
-
-```
-COMMANDS Registry
-```
-
-كل أمر عبارة عن Module مستقل.
-
-جميع الأوامر تستخدم:
-
-```
-main(argv)
-```
-
-بدلاً من:
-
-```
-sys.argv
-```
-
----
-
-# 12. Command Modules
-
-حالياً:
-
-```
-build.py
-
-validate.py
-
-stats.py
-
-report.py
-
-search.py
-
-add.py
-
-update.py
-
-remove.py
-```
-
----
-
-# 13. Database Layer
-
-```
-scripts/database.py
-```
-
-يوفر:
-
-```
-load_database()
-
-save_database()
-
-search_domain()
-
-add_domain()
-
-update_domain()
-
-remove_domain()
-
-database_stats()
-```
-
-يحافظ على جميع أعمدة CSV.
-
----
-
-# 14. Testing
-
-يستخدم:
-
-pytest
-
-الحالة الحالية:
-
-```
-26 passed
-```
-
-تشمل:
-
-CLI
-
-Database
-
-CRUD
-
-Integration
-
-Regression
-
-Interactive
-
-Build
-
-Validation
-
----
-
-# 15. GitHub Actions
-
-يوجد Workflow كامل.
-
-يقوم بـ:
-
-```
-Build
-
-Validate
-
-Pytest
-
-Reports
-```
-
----
-
-# 16. Git Workflow
-
-طريقة العمل المعتمدة:
-
-```
-Issue
-
-↓
-
-Feature Branch
-
-↓
-
-Development
-
-↓
-
-Tests
-
-↓
-
-Pull Request
-
-↓
-
-Merge
-
-↓
-
-Delete Branch
-
-↓
-
-git pull main
-```
-
----
-
-# 17. الفروع التي تم دمجها
-
-تم دمج:
-
-CLI Refactor
-
-Remove Command
-
-Update Command
-
-في main.
-
----
-
-# 18. أسلوب التطوير
-
-أي ميزة جديدة يجب أن تمر بالمراحل:
-
-1
-
-Issue
-
-2
-
-Feature Branch
-
-3
-
-Implementation
-
-4
-
-Tests
-
-5
-
-Manual Testing
-
-6
-
-Pull Request
-
-7
-
-Review
-
-8
-
-Merge
-
----
-
-# 19. ما تم تعلمه
-
-تعلمنا عدم الاعتماد على الاختبارات فقط.
-
-أي ميزة يجب اختبارها يدوياً.
-
-كل مرة اكتشفنا Bugs لم تظهر في pytest.
-
----
-
-# 20. فلسفة المشروع
-
-لا نكتب كود سريع.
-
-نكتب مشروع Open Source احترافي.
-
-كل ميزة يجب أن تكون:
-
-* قابلة للاختبار
-* موثقة
-* لها PR
-* لها Issue
-* لها Tests
-* لا تكسر الإصدارات السابقة
-
----
-
-# 21. ما تم إنجازه
-
-✅ Build System
-
-✅ Validation
-
-✅ Reports
-
-✅ Search
-
-✅ Stats
-
-✅ CLI Refactor
-
-✅ Add
-
-✅ Remove
-
-✅ Update
-
-✅ GitHub Actions
-
-✅ Database API
-
-✅ CRUD كامل
-
----
-
-# 22. المرحلة القادمة
-
-الأولوية المقترحة:
-
-### المرحلة 1
-
-```
-list
-```
-
-```
+python fivebr.py update DOMAIN
+python fivebr.py remove DOMAIN
 python fivebr.py list
+python fivebr.py doctor
+python fivebr.py normalize
+python fivebr.py export
+python fivebr.py import
+python fivebr.py review pending
 ```
 
-يدعم:
-
-```
---vendor
-
---category
-
---filter
-
---status
-
---approved
-```
-
----
-
-### المرحلة 2
-
-```
-doctor
-```
-
-يفحص:
-
-المشروع بالكامل
-
-Missing Files
-
-Database
-
-Filters
-
-Releases
-
----
-
-### المرحلة 3
-
-```
-import
-
-export
-```
-
----
-
-### المرحلة 4
-
-```
-Plugin Architecture
-```
-
----
-
-### المرحلة 5
-
-```
-Package on PyPI
-```
-
-حتى يصبح:
-
-```
-pip install fivebr
-```
-
-ثم:
-
-```
-fivebr build
-
-fivebr validate
-```
-
-بدلاً من:
-
-```
-python fivebr.py build
-```
-
----
-
-### المرحلة 6
-
-واجهة ويب (Web UI)
-
----
-
-### المرحلة 7
-
-إصدار
-
-```
-v1.0.0
-```
-
----
-
-# 23. قواعد يجب عدم كسرها
-
-أي تعديل مستقبلي يجب أن يحافظ على:
-
-* عدم حذف Metadata من CSV.
-* عدم إعادة استخدام `sys.argv`.
-* استخدام `main(argv)` في كل أمر جديد.
-* إضافة اختبارات لكل ميزة جديدة.
-* اختبار يدوي قبل الدمج.
-* عدم تعديل `database/domains.csv` في الـ PR إلا إذا كان الهدف هو تحديث البيانات نفسها.
-
----
-
-# 24. أوامر التحقق القياسية
-
-قبل أي Commit أو Pull Request، شغّل دائمًا:
-
-```powershell
-python fivebr.py build
-python fivebr.py validate
-pytest -q
-```
-
-ثم اختبر يدويًا أي ميزة جديدة إذا كانت تفاعلية.
-
----
-
-## اقتراح إضافي
-
-أنصح أن تحفظ هذا الملخص داخل المشروع باسم:
+## Review Workflow
 
 ```text
-PROJECT_MASTER_CONTEXT.md
+New Domain
+    ↓
+Pending
+    ↓
+Review
+    ↓
+Approved / Rejected
+    ↓
+Build / Release
 ```
 
-وفي كل محادثة جديدة مع ChatGPT أو Codex، ارفع هذا الملف مع المشروع. سيختصر عليك وقتًا كبيرًا ويجعل أي جلسة جديدة تبدأ من نفس المستوى دون الحاجة لإعادة شرح تاريخ المشروع.
+Community submissions should enter as `Pending`. Reviewers verify vendor, category, filter, confidence, source and evidence before approval.
+
+## Documentation Map
+
+```text
+README.md
+    ↓
+PROJECT_MASTER_CONTEXT.md
+    ↓
+docs/
+    ├── filter-guidelines.md
+    ├── review-workflow.md
+    ├── rule-review-process.md
+    ├── services-architecture.md
+    ├── specs/
+    │   ├── cli-spec.md
+    │   ├── csv-schema.md
+    │   ├── filter-format.md
+    │   └── review-workflow.md
+    ├── adr/
+    │   ├── ADR-001-csv-instead-of-sqlite.md
+    │   ├── ADR-002-command-registry.md
+    │   ├── ADR-003-services-layer.md
+    │   └── ADR-004-metadata-preservation.md
+    └── releases/
+        └── v1.0.0-beta.md
+```
+
+## ADR Index
+
+- ADR-001: CSV instead of SQLite.
+- ADR-002: Command Registry.
+- ADR-003: Services Layer.
+- ADR-004: Metadata Preservation.
+
+## Specs Index
+
+- CLI specification.
+- CSV schema specification.
+- Filter format specification.
+- Review workflow specification.
+
+## Development Rules
+
+- Do not put business logic in `fivebr.py`.
+- Keep CLI commands thin.
+- Put reusable logic in `scripts/services/`.
+- Preserve unknown database columns.
+- Add tests for every behavior change.
+- Run tests, build, validate and doctor before release.
+- Avoid Web UI, REST API, plugin system and SQLite until the platform is stable.
+
+## Phase History
+
+| Phase | Name | Status |
+| --- | --- | --- |
+| Phase 1 | CLI Refactor | Done |
+| Phase 2 | Database Management | Done |
+| Phase 3 | Platform Hardening | Done |
+| Phase 4 | Project Stabilization | Current |
+| Phase 5 | Community Platform | Planned |
+| Phase 6 | Automation | Planned |
+| Phase 7 | Web Interface | Planned |
+
+## Release Readiness Checklist
+
+- [ ] All tests pass.
+- [ ] Build completes.
+- [ ] Validate passes.
+- [ ] Doctor passes.
+- [ ] Changelog updated.
+- [ ] Release notes updated.
+- [ ] Specs reviewed.
+- [ ] ADR index reviewed.
+- [ ] Git tag prepared.
+- [ ] GitHub Release prepared.

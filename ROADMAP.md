@@ -2,61 +2,83 @@
 
 ## Completed
 
+### Phase 1 - CLI Refactor
+
 - Structured project layout.
 - Command registry based CLI.
-- CSV database layer with metadata preservation.
-- CRUD commands: add, search, update, remove.
-- Filter build, validate, report and stats commands.
-- Test suite for core behavior.
-- Initial documentation, security policy and contribution guide.
+- `fivebr.py` as a command router.
+- CRUD foundation: add, search, update, remove.
+- Build, validate, stats and report commands.
+- Initial GitHub structure and tests.
+
+### Phase 2 - Database Management
+
+- `list`
+- `doctor`
+- `normalize`
+- `export`
+- `import`
+- README architecture section.
+- Roadmap structure.
+
+### Phase 3 - Platform Hardening
+
+- `scripts/services/` business logic layer.
+- Central database integrity validation.
+- Metadata-aware database operations.
+- Review workflow: submit, pending, approve, reject.
+- Reports for status, vendors and categories.
+- Regression fix for interactive add workflow.
+
+### Phase 4 - Project Stabilization
+
+- Version target: `v1.0.0-beta`.
+- Specs added under `docs/specs/`.
+- Architecture Decision Records added under `docs/adr/`.
+- Release notes added under `docs/releases/`.
+- `PROJECT_MASTER_CONTEXT.md` upgraded into a project dashboard.
 
 ## In Progress
 
-- Phase 2 CLI/Data Management commands:
-  - `list`
-  - `doctor`
-  - `normalize`
-  - `export`
-  - `import`
-- Review workflow foundation using `Status` values.
+- Stabilization review before first beta release.
+- Manual verification checklist.
+- Documentation consistency review.
 
 ## Planned
 
-- Stronger review workflow: Pending → Review → Approved → Rejected.
-- Coverage reporting.
-- Release signing/checksums.
+### v1.0.0
+
+- Final release notes.
+- Git tag.
+- GitHub Release artifact.
+- Release checksum/signing plan.
+- Coverage report.
+- Stronger duplicate and vendor-alias reporting.
+
+### Phase 5 - Community Platform
+
+- Contributor review process.
+- Community moderation roles.
+- Pending queue policy.
+- Public contribution templates for new domains.
+
+### Phase 6 - Automation
+
+- Automated release packaging.
 - Changelog automation.
-- GitHub Actions CI for test, validate, build and release artifacts.
+- Scheduled validation/report jobs.
+- Optional backup/restore workflow.
+
+### Phase 7 - Web Interface
+
+- REST API.
+- Web dashboard.
+- Plugin system.
 
 ## Backlog
 
-- Web dashboard.
-- REST API.
-- Plugin system.
-- Community moderation roles.
-- Public metrics dashboard.
-
-
-## Phase 3 - Platform Hardening
-
-### Completed
-
-- Services layer.
-- Central integrity validation.
-- Metadata fields.
-- Review Workflow.
-- Database reports.
-- Phase 3 tests.
-
-### Next
-
 - `doctor --fix`.
-- backup/restore.
-- richer duplicate and vendor-alias detection.
-- coverage reports.
-
-## Phase 4 - Interfaces
-
-- REST API.
-- Web UI.
-- Plugin system.
+- `backup` / `restore`.
+- Advanced coverage reports.
+- Public metrics dashboard.
+- SQLite investigation, only if CSV becomes a real limitation.

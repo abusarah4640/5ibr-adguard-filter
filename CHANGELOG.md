@@ -31,3 +31,31 @@
 - Updated `doctor` to use the central integrity layer.
 - Added database reports: status, vendor, category and database summary.
 - Added Phase 3 tests for integrity and review workflow.
+
+## v1.0.0-beta - Phase 4 Project Stabilization
+
+### Added
+
+- Added formal specs under `docs/specs/`:
+  - CLI specification.
+  - CSV schema specification.
+  - Filter format specification.
+  - Review workflow specification.
+- Added Architecture Decision Records under `docs/adr/`:
+  - ADR-001 CSV instead of SQLite.
+  - ADR-002 Command Registry.
+  - ADR-003 Services Layer.
+  - ADR-004 Metadata Preservation.
+- Added release notes under `docs/releases/v1.0.0-beta.md`.
+- Upgraded `PROJECT_MASTER_CONTEXT.md` into a project dashboard.
+- Updated `ROADMAP.md` for Phase 4 stabilization and post-v1.0 planning.
+
+### Changed
+
+- Set project version target to `1.0.0-beta`.
+- Clarified documentation hierarchy and release readiness checklist.
+
+### Notes
+
+- No runtime feature expansion in this phase.
+- No Services, Review Workflow or Database Integrity changes were introduced.
