@@ -17,6 +17,12 @@
         "filter": "telemetry",
         "vendor": "Microsoft"
     },
+    "chaturbate.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
     "connect.facebook.net": {
         "category": "Social",
         "confidence": 90,
@@ -77,6 +83,12 @@
         "filter": "social",
         "vendor": "Meta"
     },
+    "livejasmin.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
     "metrics.data.hicloud.com": {
         "category": "Telemetry",
         "confidence": 100,
@@ -95,11 +107,35 @@
         "filter": "ads",
         "vendor": "Google"
     },
+    "pornhub.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "redtube.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
     "settings-win.data.microsoft.com": {
         "category": "Telemetry",
         "confidence": 100,
         "filter": "telemetry",
         "vendor": "Microsoft"
+    },
+    "spankbang.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "stripchat.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
     },
     "telemetry.riotgames.com": {
         "category": "Gaming",
@@ -130,5 +166,29 @@
         "confidence": 100,
         "filter": "telemetry",
         "vendor": "Microsoft"
+    },
+    "xhamster.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "xnxx.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "xvideos.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "youporn.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
     }
 }

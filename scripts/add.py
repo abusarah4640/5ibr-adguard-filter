@@ -9,10 +9,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from scripts.database import (
-    add_domain,
-    search_domain,
-)
+from scripts.database import search_domain
+from scripts.services.database_service import add_validated_domain
 
 
 def _ask(prompt: str, value: str | None) -> str:
@@ -21,8 +19,7 @@ def _ask(prompt: str, value: str | None) -> str:
     if value:
         return value.strip()
 
-    sys.stdout.write(f"{prompt}: ")
-    sys.stdout.flush()
+    print(f"{prompt}:")
 
     return sys.stdin.readline().strip()
 
@@ -74,8 +71,7 @@ def main(argv: list[str] | None = None) -> int:
 
         while True:
 
-            sys.stdout.write("Confidence: ")
-            sys.stdout.flush()
+            print("Confidence:")
             value = sys.stdin.readline().strip()
 
             try:
@@ -94,7 +90,7 @@ def main(argv: list[str] | None = None) -> int:
 
         return 1
 
-    added = add_domain(
+    added, errors = add_validated_domain(
         domain=domain,
         vendor=vendor,
         category=category,
@@ -105,6 +101,8 @@ def main(argv: list[str] | None = None) -> int:
     if not added:
 
         print("ERROR: Unable to add domain.")
+        for error in errors:
+            print(f"- {error}")
 
         return 1
 

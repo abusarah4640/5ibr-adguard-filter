@@ -7,7 +7,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from scripts.database import search_domain, update_domain
+from scripts.database import search_domain
+from scripts.services.database_service import update_validated_domain
 
 
 def _ask(prompt: str, current: str, value: str | None) -> str:
@@ -144,14 +145,17 @@ def main(argv: list[str] | None = None) -> int:
         print("ERROR: Confidence must be between 0 and 100.")
         return 1
 
-    if not update_domain(
+    updated, errors = update_validated_domain(
         domain=domain,
         vendor=vendor,
         category=category,
         filter_name=filter_name,
         confidence=confidence,
-    ):
-        print("ERROR: Domain not found.")
+    )
+    if not updated:
+        print("ERROR: Unable to update domain.")
+        for error in errors:
+            print(f"- {error}")
         return 1
 
     print()

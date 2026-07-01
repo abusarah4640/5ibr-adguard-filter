@@ -1,23 +1,33 @@
-Domain,Vendor,Category,Filter,Confidence,Status,Source,Notes
-mobile.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Official Windows telemetry endpoint
-browser.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Microsoft Edge telemetry
-settings-win.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows diagnostics
-v10.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows event collection
-watson.telemetry.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows error reporting
-activity.windows.com,Microsoft,Telemetry,privacy,95,Approved,Microsoft Documentation,Windows activity history
-firebaseinstallations.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Firebase Installations
-firebaselogging.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Firebase Logging
-firebase-settings.crashlytics.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Crashlytics
-firebasecrashlytics.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Crashlytics API
-app-measurement.com,Google,Telemetry,telemetry,100,Approved,Google Documentation,Analytics
-pagead2.googlesyndication.com,Google,Ads,ads,100,Approved,Google Ads,Ads
-doubleclick.net,Google,Ads,ads,100,Approved,Google Ads,Advertising
-googleads.g.doubleclick.net,Google,Ads,ads,100,Approved,Google Ads,Advertising
-graph.facebook.com,Meta,Social,social,90,Approved,Meta Documentation,Facebook Graph API
-connect.facebook.net,Meta,Social,social,90,Approved,Meta Documentation,Facebook SDK
-tracking.miui.com,Xiaomi,Telemetry,mobile,100,Approved,Xiaomi Documentation,MIUI telemetry
-metrics.data.hicloud.com,Huawei,Telemetry,mobile,100,Approved,Huawei Documentation,Huawei telemetry
-tracking.coloros.com,OPPO,Telemetry,mobile,100,Approved,Vendor Documentation,ColorOS telemetry
-telemetry.riotgames.com,Riot Games,Gaming,gaming,100,Approved,Riot Documentation,Riot telemetry
-eic.rdl.lgtvcommon.com,LG,Smart TV,smart-tv,100,Approved,LG Documentation,LG telemetry
-eic.homeprv.lgtvcommon.com,LG,Smart TV,smart-tv,100,Approved,LG Documentation,LG analytics
+Domain,Vendor,Category,Filter,Confidence,Status,Source,Notes,Evidence,Created,Updated,Reviewer
+activity.windows.com,Microsoft,Telemetry,privacy,95,Approved,Microsoft Documentation,Windows activity history,,,,
+app-measurement.com,Google,Telemetry,telemetry,100,Approved,Google Documentation,Analytics,,,,
+browser.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Microsoft Edge telemetry,,,,
+chaturbate.com,Adult,Adult,adult,100,Approved,Manual Review,Adult live content,,,,
+connect.facebook.net,Meta,Social,social,90,Approved,Meta Documentation,Facebook SDK,,,,
+doubleclick.net,Google,Ads,ads,100,Approved,Google Ads,Advertising,,,,
+eic.homeprv.lgtvcommon.com,LG,Smart TV,smart-tv,100,Approved,LG Documentation,LG analytics,,,,
+eic.rdl.lgtvcommon.com,LG,Smart TV,smart-tv,100,Approved,LG Documentation,LG telemetry,,,,
+firebase-settings.crashlytics.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Crashlytics,,,,
+firebasecrashlytics.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Crashlytics API,,,,
+firebaseinstallations.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Firebase Installations,,,,
+firebaselogging.googleapis.com,Google,Telemetry,telemetry,100,Approved,Firebase Documentation,Firebase Logging,,,,
+googleads.g.doubleclick.net,Google,Ads,ads,100,Approved,Google Ads,Advertising,,,,
+graph.facebook.com,Meta,Social,social,90,Approved,Meta Documentation,Facebook Graph API,,,,
+livejasmin.com,Adult,Adult,adult,100,Approved,Manual Review,Adult live content,,,,
+metrics.data.hicloud.com,Huawei,Telemetry,mobile,100,Approved,Huawei Documentation,Huawei telemetry,,,,
+mobile.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Official Windows telemetry endpoint,,,,
+pagead2.googlesyndication.com,Google,Ads,ads,100,Approved,Google Ads,Ads,,,,
+pornhub.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+redtube.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+settings-win.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows diagnostics,,,,
+spankbang.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+stripchat.com,Adult,Adult,adult,100,Approved,Manual Review,Adult live content,,,,
+telemetry.riotgames.com,Riot Games,Gaming,gaming,100,Approved,Riot Documentation,Riot telemetry,,,,
+tracking.coloros.com,OPPO,Telemetry,mobile,100,Approved,Vendor Documentation,ColorOS telemetry,,,,
+tracking.miui.com,Xiaomi,Telemetry,mobile,100,Approved,Xiaomi Documentation,MIUI telemetry,,,,
+v10.events.data.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows event collection,,,,
+watson.telemetry.microsoft.com,Microsoft,Telemetry,telemetry,100,Approved,Microsoft Documentation,Windows error reporting,,,,
+xhamster.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+xnxx.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+xvideos.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,
+youporn.com,Adult,Adult,adult,100,Approved,Manual Review,Adult content,,,,

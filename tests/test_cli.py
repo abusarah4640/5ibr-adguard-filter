@@ -9,6 +9,12 @@ def test_command_registry_contains_supported_commands():
         "add",
         "build",
         "remove",
+        "review",
+        "list",
+        "doctor",
+        "normalize",
+        "export",
+        "import",
         "report",
         "search",
         "stats",
@@ -38,3 +44,6 @@ def test_update_command_appears_in_help():
     help_text = fivebr.build_parser().format_help()
 
     assert "update" in help_text
+    assert "doctor" in help_text
+    assert "list" in help_text
+    assert "review" in help_text
