@@ -1,68 +1,114 @@
 # 5ibr AdGuard Filter
 
-An open-source AdGuard Home filter project focused on privacy, security, telemetry blocking and gaming.
+قوائم فلترة مخصصة لـ AdGuard Home لمشروع 5ibr، مقسمة إلى إعلانات، تتبع/Telemetry، خصوصية، جوال، Smart TV، ألعاب، ومحتوى عائلي.
 
-## Features
+## القوائم الجاهزة للاستيراد
 
-- Modular filter generation
-- Automatic release generation
-- Database-driven domain management
-- CLI toolkit
-- Validation system
-- Statistics and reporting
+- `releases/home.txt` — مناسب لمعظم أجهزة البيت.
+- `releases/privacy.txt` — خصوصية وتتبّع فقط.
+- `releases/gaming.txt` — تتبع الألعاب فقط.
+- `releases/family.txt` — فلتر عائلي متوازن.
+- `releases/strict-family.txt` — فلتر عائلي أشد.
+- `releases/all.txt` — كل التصنيفات في قائمة واحدة.
 
-## Installation
-
-```bash
-git clone https://github.com/abusarah4640/5ibr-adguard-filter.git
-cd 5ibr-adguard-filter
-python fivebr.py build
-```
-
-## Commands
+## التشغيل
 
 ```bash
-python fivebr.py build
-python fivebr.py validate
-python fivebr.py report
-python fivebr.py stats
-python fivebr.py search <domain>
+python3 fivebr.py build
+python3 fivebr.py validate
+python3 fivebr.py stats
+python3 fivebr.py report
 ```
 
-## Project Structure
+## الإضافة والبحث
 
-```
-config/
-database/
-docs/
-filters/
-releases/
-scripts/
-tests/
+```bash
+python3 fivebr.py search example.com
+python3 fivebr.py add --domain example.com --vendor Example --category Telemetry --filter telemetry --confidence 90
+python3 fivebr.py build
+python3 fivebr.py validate
 ```
 
-## Roadmap
+## ملاحظة
 
-### v0.2.0
+استخدم قائمة واحدة أساسية داخل AdGuard Home لتجنب التكرار. عند حدوث مشكلة في موقع أو لعبة، أضف الاستثناء في `filters/whitelist.txt` أو في Custom filtering rules داخل AdGuard Home.
 
-- Database Manager
-- CLI
-- Search
-- Stats
-- Add
-- Remove
-- Update
+## Architecture
 
-### v0.3.0
+```text
+CSV Database
+    ↓
+CLI Commands / Builder
+    ↓
+Category Filter Files
+    ↓
+Release Bundles
+```
 
-- Analyzer
-- Reports
-- HTML Dashboard
+The project is built around one source of truth: `database/domains.csv`.
+CLI commands manage the database, the builder generates filter files from it, and release bundles combine filters into ready-to-use AdGuard Home lists.
 
-### v1.0.0
+## Phase 2 CLI Commands
 
-- Stable Release
+```bash
+python fivebr.py list --vendor Google --status Approved
+python fivebr.py doctor
+python fivebr.py normalize --dry-run
+python fivebr.py export --format json --output database-export.json
+python fivebr.py import new-domains.csv --status Pending
+```
 
-## License
+- `list`: shows database rows with filtering by vendor, category, filter, or status.
+- `doctor`: checks database, config, filters, releases, duplicates, and confidence values.
+- `normalize`: cleans casing, whitespace, domain formatting, and common vendor/category/status aliases.
+- `export`: exports the database to CSV, JSON, or Markdown.
+- `import`: imports CSV/JSON rows and defaults new items to `Pending` for review.
 
-GPL-3.0
+## Review Workflow
+
+```text
+New Domain
+    ↓
+Pending
+    ↓
+Review
+    ↓
+Approved
+    ↓
+Build / Release
+```
+
+New imported domains should enter the database as `Pending`. Reviewers can validate the source, category, filter, confidence, and safety impact before changing the status to `Approved`.
+
+
+## Phase 3 Platform Hardening
+
+The project now includes a Services layer:
+
+```text
+fivebr.py
+    ↓
+CLI Commands
+    ↓
+Services
+    ↓
+Database
+    ↓
+CSV
+```
+
+Key Phase 3 additions:
+
+- Central Database Integrity validation.
+- Metadata support: Created, Updated, Reviewer, Source, Evidence and Notes.
+- Review Workflow: Pending → Approved → Build.
+- Database reports for status, vendors and categories.
+
+Review commands:
+
+```bash
+python fivebr.py review submit --domain example.com --vendor Example --category Telemetry --filter telemetry --confidence 80
+python fivebr.py review pending
+python fivebr.py review approve example.com --reviewer ibrahim
+python fivebr.py review reject example.com --reviewer ibrahim --notes "Insufficient evidence"
+```

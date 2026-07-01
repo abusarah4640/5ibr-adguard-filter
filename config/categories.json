@@ -19,7 +19,59 @@
     "mintegral",
     "adtraffic"
   ],
-
+  "adult": [
+    "adult",
+    "porn",
+    "xxx",
+    "sex",
+    "cam",
+    "escort",
+    "nsfw"
+  ],
+  "gaming": [
+    "steam",
+    "epic",
+    "riot",
+    "ea",
+    "origin",
+    "ubisoft",
+    "xbox",
+    "playstation",
+    "battle",
+    "blizzard"
+  ],
+  "privacy": [
+    "fingerprint",
+    "fingerprinting",
+    "devicecheck",
+    "identify",
+    "identity",
+    "beacon",
+    "pixel",
+    "session"
+  ],
+  "smart-tv": [
+    "lgtv",
+    "webos",
+    "samsung",
+    "tizen",
+    "hisense",
+    "roku",
+    "androidtv",
+    "bravia"
+  ],
+  "social": [
+    "facebook",
+    "instagram",
+    "messenger",
+    "whatsapp",
+    "twitter",
+    "x.com",
+    "linkedin",
+    "snapchat",
+    "tiktok",
+    "discord"
+  ],
   "telemetry": [
     "telemetry",
     "metrics",
@@ -40,53 +92,5 @@
     "crashlytics",
     "perf",
     "monitor"
-  ],
-
-  "privacy": [
-    "fingerprint",
-    "fingerprinting",
-    "devicecheck",
-    "identify",
-    "identity",
-    "beacon",
-    "pixel",
-    "session"
-  ],
-
-  "social": [
-    "facebook",
-    "instagram",
-    "messenger",
-    "whatsapp",
-    "twitter",
-    "x.com",
-    "linkedin",
-    "snapchat",
-    "tiktok",
-    "discord"
-  ],
-
-  "gaming": [
-    "steam",
-    "epic",
-    "riot",
-    "ea",
-    "origin",
-    "ubisoft",
-    "xbox",
-    "playstation",
-    "battle",
-    "blizzard"
-  ],
-
-  "smart-tv": [
-    "lgtv",
-    "webos",
-    "samsung",
-    "tizen",
-    "hisense",
-    "roku",
-    "androidtv",
-    "bravia"
   ]
 }

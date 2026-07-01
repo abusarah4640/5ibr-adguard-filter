@@ -1,5 +1,5 @@
-! Title: 5ibr Family Filter
-! Description: Balanced family filter with ads, telemetry, privacy, mobile, TV, gaming telemetry and adult-content blocking.
+! Title: 5ibr Strict Family Filter
+! Description: Stricter family profile: includes home protection plus adult-content blocking.
 ! Homepage: https://github.com/abusarah4640/5ibr-adguard-filter
 ! License: GPL-3.0
 ! Generated automatically.

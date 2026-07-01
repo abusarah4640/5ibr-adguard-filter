@@ -77,7 +77,7 @@ def test_cli_add_search_remove_workflow(monkeypatch, tmp_path, capsys):
         ]
     ) == 0
 
-    assert "test.example,Example,Telemetry,telemetry,75,,," in csv_file.read_text(
+    assert "test.example,Example,Telemetry,telemetry,75,Approved" in csv_file.read_text(
         encoding="utf-8"
     )
 
@@ -125,7 +125,7 @@ def test_add_interactive_prompts_are_rendered_once(monkeypatch, tmp_path, capsys
     assert output.count("Category:") == 1
     assert output.count("Filter:") == 1
     assert output.count("Confidence:") == 1
-    assert "prompt.example,Example,Telemetry,telemetry,75,,," in content
+    assert "prompt.example,Example,Telemetry,telemetry,75,Approved" in content
 
 
 def test_cli_add_update_search_remove_interactive_workflow(monkeypatch, tmp_path, capsys):

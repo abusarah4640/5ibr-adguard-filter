@@ -12,10 +12,9 @@
             "smart-tv"
         ]
     },
-
     "family": {
         "title": "5ibr Family Filter",
-        "description": "Balanced filter for family devices.",
+        "description": "Balanced family filter with ads, telemetry, privacy, mobile, TV, gaming telemetry and adult-content blocking.",
         "filters": [
             "ads",
             "privacy",
@@ -23,10 +22,10 @@
             "social",
             "mobile",
             "gaming",
-            "smart-tv"
+            "smart-tv",
+            "adult"
         ]
     },
-
     "privacy": {
         "title": "5ibr Privacy Filter",
         "description": "Privacy focused filter.",
@@ -35,12 +34,39 @@
             "telemetry"
         ]
     },
-
     "gaming": {
         "title": "5ibr Gaming Filter",
         "description": "Gaming services filter.",
         "filters": [
             "gaming"
+        ]
+    },
+    "strict-family": {
+        "title": "5ibr Strict Family Filter",
+        "description": "Stricter family profile: includes home protection plus adult-content blocking.",
+        "filters": [
+            "ads",
+            "privacy",
+            "telemetry",
+            "social",
+            "mobile",
+            "gaming",
+            "smart-tv",
+            "adult"
+        ]
+    },
+    "all": {
+        "title": "5ibr Complete Filter",
+        "description": "All approved 5ibr blocking categories in one release.",
+        "filters": [
+            "ads",
+            "privacy",
+            "telemetry",
+            "social",
+            "mobile",
+            "gaming",
+            "smart-tv",
+            "adult"
         ]
     }
 }

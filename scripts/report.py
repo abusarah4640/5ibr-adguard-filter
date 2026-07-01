@@ -9,6 +9,7 @@ from collections import Counter
 from pathlib import Path
 
 from scripts.cli import parse_no_args
+from scripts.services.report_service import category_report, status_report, vendor_report
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -21,6 +22,8 @@ SUMMARY_MD = REPORT_DIR / "summary.md"
 VENDORS_CSV = REPORT_DIR / "vendors.csv"
 
 CATEGORIES_CSV = REPORT_DIR / "categories.csv"
+STATUS_CSV = REPORT_DIR / "status.csv"
+DATABASE_SUMMARY_MD = REPORT_DIR / "database-summary.md"
 
 
 def load_candidates() -> list[dict[str, str]]:
@@ -39,6 +42,42 @@ def load_candidates() -> list[dict[str, str]]:
             rows.append(row)
 
     return rows
+
+
+
+def write_database_reports() -> None:
+    """Write database-level vendor/category/status reports."""
+
+    with VENDORS_CSV.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Vendor", "Count"])
+        for vendor, count in vendor_report().most_common():
+            writer.writerow([vendor, count])
+
+    with CATEGORIES_CSV.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Category", "Count"])
+        for category, count in category_report().most_common():
+            writer.writerow([category, count])
+
+    statuses = status_report()
+    with STATUS_CSV.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Status", "Count"])
+        for status, count in statuses.most_common():
+            writer.writerow([status, count])
+
+    with DATABASE_SUMMARY_MD.open("w", encoding="utf-8") as file:
+        file.write("# 5ibr Database Summary\n\n")
+        file.write("## Status\n\n")
+        for status, count in statuses.most_common():
+            file.write(f"- {status}: {count}\n")
+        file.write("\n## Top Vendors\n\n")
+        for vendor, count in vendor_report().most_common(20):
+            file.write(f"- {vendor}: {count}\n")
+        file.write("\n## Categories\n\n")
+        for category, count in category_report().most_common():
+            file.write(f"- {category}: {count}\n")
 
 
 def write_summary(rows: list[dict[str, str]]) -> None:
@@ -128,6 +167,8 @@ def main(argv: list[str] | None = None) -> int:
 
     write_category_csv(rows)
 
+    write_database_reports()
+
     print()
 
     print("===================================")
@@ -141,6 +182,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Generated  : {SUMMARY_MD.name}")
     print(f"Generated  : {VENDORS_CSV.name}")
     print(f"Generated  : {CATEGORIES_CSV.name}")
+    print(f"Generated  : {STATUS_CSV.name}")
+    print(f"Generated  : {DATABASE_SUMMARY_MD.name}")
 
     print()
 
