@@ -112,3 +112,34 @@ python fivebr.py review pending
 python fivebr.py review approve example.com --reviewer ibrahim
 python fivebr.py review reject example.com --reviewer ibrahim --notes "Insufficient evidence"
 ```
+
+## Phase 4 - Project Stabilization
+
+Phase 4 focuses on stabilizing the project as an open-source product rather than adding more runtime features.
+
+Documentation map:
+
+```text
+README.md
+    ↓
+PROJECT_MASTER_CONTEXT.md
+    ↓
+docs/
+    ├── specs/
+    ├── adr/
+    └── releases/
+```
+
+Stabilization documents:
+
+- `docs/specs/cli-spec.md`
+- `docs/specs/csv-schema.md`
+- `docs/specs/filter-format.md`
+- `docs/specs/review-workflow.md`
+- `docs/adr/ADR-001-csv-instead-of-sqlite.md`
+- `docs/adr/ADR-002-command-registry.md`
+- `docs/adr/ADR-003-services-layer.md`
+- `docs/adr/ADR-004-metadata-preservation.md`
+- `docs/releases/v1.0.0-beta.md`
+
+Current stabilization target: `v1.0.0-beta`.
