@@ -175,6 +175,76 @@ def test_login_post_still_rejects_missing_csrf(tmp_path):
     assert response.status_code == 400
 
 
+def test_login_rotates_anonymous_session_and_csrf(tmp_path):
+    app = security_app(tmp_path)
+    app.extensions["fivebr_users"].create_user(
+        "csrf-viewer",
+        "csrf-password-123",
+        role="viewer",
+    )
+    client = app.test_client()
+    anonymous_token = token_from(client.get("/login"))
+
+    response = client.post(
+        "/login",
+        data={
+            "csrf_token": anonymous_token,
+            "username": "csrf-viewer",
+            "password": "csrf-password-123",
+        },
+    )
+
+    assert response.status_code == 302
+    authenticated_token = token_from(client.get("/"))
+    assert authenticated_token != anonymous_token
+    assert client.post(
+        "/actions/validate",
+        data={"csrf_token": anonymous_token},
+    ).status_code == 400
+    assert client.post(
+        "/actions/validate",
+        data={"csrf_token": authenticated_token},
+    ).status_code == 403
+
+
+def test_logout_rotates_session_and_clears_remember_cookie(tmp_path):
+    app = security_app(tmp_path)
+    app.extensions["fivebr_users"].create_user(
+        "remember-owner",
+        "remember-password-123",
+        role="admin",
+    )
+    client = app.test_client()
+    anonymous_token = token_from(client.get("/login"))
+    logged_in = client.post(
+        "/login",
+        data={
+            "csrf_token": anonymous_token,
+            "username": "remember-owner",
+            "password": "remember-password-123",
+            "remember": "on",
+        },
+    )
+    assert logged_in.status_code == 302
+    authenticated_token = token_from(client.get("/"))
+
+    logged_out = client.post(
+        "/logout",
+        data={"csrf_token": authenticated_token},
+    )
+
+    assert logged_out.status_code == 302
+    cookies = logged_out.headers.getlist("Set-Cookie")
+    assert any(
+        cookie.startswith("fivebr_remember=")
+        and ("Max-Age=0" in cookie or "Expires=Thu, 01 Jan 1970" in cookie)
+        for cookie in cookies
+    )
+    assert client.get("/").status_code == 302
+    post_logout_token = token_from(client.get("/login"))
+    assert post_logout_token != authenticated_token
+
+
 def test_development_entrypoint_binds_loopback_only(monkeypatch):
     calls = []
     monkeypatch.delenv("FIVEBR_ENV", raising=False)

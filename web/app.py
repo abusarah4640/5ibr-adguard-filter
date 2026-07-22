@@ -431,6 +431,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         if request.method == "POST":
             user = users.authenticate(request.form.get("username", ""), request.form.get("password", ""))
             if user:
+                session.clear()
                 login_user(user, remember=request.form.get("remember") == "on")
                 session["language"] = user.language
                 flash(translate("login_success"), "success")
@@ -441,6 +442,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
     @app.route("/logout", methods=["POST"])
     @login_required
     def logout():
+        session.clear()
         logout_user()
         flash(translate("logout_success"), "success")
         return redirect(url_for("login"))
@@ -494,8 +496,8 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
                 flash(str(exc), "danger")
             else:
                 if changed:
-                    logout_user()
                     session.clear()
+                    logout_user()
                     flash(translate("password_changed"), "success")
                     return redirect(url_for("login"))
                 flash(translate("current_password_invalid"), "danger")
