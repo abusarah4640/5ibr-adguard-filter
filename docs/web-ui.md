@@ -44,8 +44,11 @@ gunicorn \
   web.app:app
 ```
 
-Place Gunicorn behind a TLS reverse proxy. Do not expose the Flask development
-server or Gunicorn directly to an untrusted network.
+Place Gunicorn behind a TLS reverse proxy or authenticated tunnel. Do not expose
+the Flask development server or Gunicorn directly to an untrusted network.
+
+For the tested systemd deployment, health checks, firewall requirements, and
+rollback procedure, see `docs/production-web-deployment.md`.
 
 ## Features
 
