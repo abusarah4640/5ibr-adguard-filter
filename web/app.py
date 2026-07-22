@@ -312,8 +312,8 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
     login_manager.init_app(app)
 
     @login_manager.user_loader
-    def load_user(user_id: str):
-        return users.get(user_id)
+    def load_user(identity: str):
+        return users.get_for_session(identity)
 
     @login_manager.unauthorized_handler
     def unauthorized():
@@ -484,11 +484,20 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
             flash(translate("password_mismatch"), "danger")
         else:
             try:
-                changed = users.change_password(current_user.id, request.form.get("current_password", ""), new_password)
+                changed = users.change_password(
+                    current_user.id,
+                    request.form.get("current_password", ""),
+                    new_password,
+                )
             except ValueError as exc:
                 flash(str(exc), "danger")
             else:
-                flash(translate("password_changed" if changed else "current_password_invalid"), "success" if changed else "danger")
+                if changed:
+                    logout_user()
+                    session.clear()
+                    flash(translate("password_changed"), "success")
+                    return redirect(url_for("login"))
+                flash(translate("current_password_invalid"), "danger")
         return redirect(url_for("settings"))
 
     def run_fivebr(*args: str) -> tuple[int, str]:

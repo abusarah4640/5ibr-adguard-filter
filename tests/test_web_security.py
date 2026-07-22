@@ -1,3 +1,4 @@
+import sqlite3
 import subprocess
 from io import BytesIO
 from pathlib import Path
@@ -8,6 +9,7 @@ from datetime import timedelta
 import pytest
 
 from web.app import create_app
+from web.auth import UserStore
 
 
 def security_app(tmp_path, **config):
@@ -199,6 +201,131 @@ def test_viewer_cannot_mutate_and_editor_cannot_build(tmp_path):
     token = token_from(editor.get("/"))
     assert editor.post("/actions/build", data={"csrf_token": token}).status_code == 403
     assert editor.get("/domains/add").status_code == 200
+
+
+def test_legacy_user_database_migrates_session_versions(tmp_path):
+    database = tmp_path / "legacy-users.sqlite3"
+    with sqlite3.connect(database) as db:
+        db.execute(
+            """CREATE TABLE web_users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                password_hash TEXT NOT NULL,
+                display_name TEXT NOT NULL DEFAULT '',
+                email TEXT NOT NULL DEFAULT '',
+                role TEXT NOT NULL DEFAULT 'viewer',
+                language TEXT NOT NULL DEFAULT 'en',
+                theme TEXT NOT NULL DEFAULT 'auto',
+                timezone TEXT NOT NULL DEFAULT 'UTC',
+                date_format TEXT NOT NULL DEFAULT 'yyyy-mm-dd',
+                active INTEGER NOT NULL DEFAULT 1
+            )"""
+        )
+        db.execute(
+            "INSERT INTO web_users (username, password_hash) VALUES (?, ?)",
+            ("legacy-user", "legacy-hash"),
+        )
+
+    store = UserStore(database)
+    store.initialize()
+    user = store.get(1)
+
+    assert user is not None
+    assert user.session_version
+    assert store.get_for_session(str(user.id)) is None
+    assert store.get_for_session(user.get_id()) is not None
+
+
+def test_password_change_revokes_parallel_and_remembered_sessions(tmp_path):
+    app = security_app(tmp_path)
+    store = app.extensions["fivebr_users"]
+    store.create_user(
+        "session-owner",
+        "old-password-123",
+        role="admin",
+    )
+
+    primary = app.test_client()
+    parallel = app.test_client()
+    remembered = app.test_client()
+    assert login(primary, "session-owner", "old-password-123").status_code == 302
+    assert login(parallel, "session-owner", "old-password-123").status_code == 302
+
+    remember_token = token_from(remembered.get("/login"))
+    remember_response = remembered.post(
+        "/login",
+        data={
+            "csrf_token": remember_token,
+            "username": "session-owner",
+            "password": "old-password-123",
+            "remember": "on",
+        },
+    )
+    assert remember_response.status_code == 302
+    remembered.delete_cookie(app.config["SESSION_COOKIE_NAME"])
+    assert remembered.get("/").status_code == 200
+    remembered.delete_cookie(app.config["SESSION_COOKIE_NAME"])
+
+    token = token_from(primary.get("/settings"))
+    changed = primary.post(
+        "/settings/password",
+        data={
+            "csrf_token": token,
+            "current_password": "old-password-123",
+            "new_password": "new-password-456",
+            "confirm_password": "new-password-456",
+        },
+    )
+
+    assert changed.status_code == 302
+    assert changed.headers["Location"].endswith("/login")
+    assert parallel.get("/").status_code == 302
+    assert "/login" in parallel.get("/").headers["Location"]
+    assert remembered.get("/").status_code == 302
+    assert "/login" in remembered.get("/").headers["Location"]
+    assert login(app.test_client(), "session-owner", "old-password-123").status_code == 200
+    assert login(app.test_client(), "session-owner", "new-password-456").status_code == 302
+
+
+def test_disabling_account_revokes_existing_session(tmp_path):
+    app = security_app(tmp_path)
+    store = app.extensions["fivebr_users"]
+    user_id = store.create_user(
+        "disable-owner",
+        "disable-password-123",
+        role="admin",
+    )
+    client = app.test_client()
+    assert login(client, "disable-owner", "disable-password-123").status_code == 302
+    assert client.get("/").status_code == 200
+
+    store.set_active(user_id, False)
+
+    response = client.get("/")
+    assert response.status_code == 302
+    assert "/login" in response.headers["Location"]
+
+
+def test_role_change_revokes_existing_session(tmp_path):
+    app = security_app(tmp_path)
+    store = app.extensions["fivebr_users"]
+    user_id = store.create_user(
+        "role-owner",
+        "role-password-123",
+        role="admin",
+    )
+    client = app.test_client()
+    assert login(client, "role-owner", "role-password-123").status_code == 302
+    assert client.get("/").status_code == 200
+
+    store.set_role(user_id, "viewer")
+
+    response = client.get("/")
+    assert response.status_code == 302
+    assert "/login" in response.headers["Location"]
+    replacement = app.test_client()
+    assert login(replacement, "role-owner", "role-password-123").status_code == 302
+    assert replacement.get("/").status_code == 200
 
 
 def test_inactive_user_cannot_login(tmp_path):
