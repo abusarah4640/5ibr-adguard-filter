@@ -771,12 +771,22 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
             min_seen = request.form.get("min_seen", "10") or "10"
             limit = request.form.get("limit", "100") or "100"
             file = request.files.get("querylog")
-            path = request.form.get("path", "").strip()
+            path = ""
             if file and file.filename:
-                safe_name = Path(file.filename).name
-                path_obj = UPLOADS_DIR / safe_name
-                file.save(path_obj)
-                path = str(path_obj)
+                uploads_root = UPLOADS_DIR.resolve()
+                path_obj = (
+                    uploads_root
+                    / f"{secrets.token_urlsafe(24)}.json"
+                ).resolve()
+                if not path_obj.is_relative_to(uploads_root):
+                    return (translate("forbidden"), 403)
+                try:
+                    with path_obj.open("xb") as destination:
+                        file.save(destination)
+                except FileExistsError:
+                    flash(translate("querylog_required"), "danger")
+                else:
+                    path = str(path_obj)
             if not path:
                 flash(translate("querylog_required"), "danger")
             else:

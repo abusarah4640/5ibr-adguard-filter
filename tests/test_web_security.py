@@ -1,3 +1,7 @@
+import subprocess
+from io import BytesIO
+from pathlib import Path
+
 import re
 from datetime import timedelta
 
@@ -29,6 +33,102 @@ def login(client, username: str, password: str):
         "csrf_token": token, "username": username, "password": password,
     })
 
+
+
+
+def test_analyze_log_rejects_free_server_path(tmp_path, monkeypatch):
+    uploads = tmp_path / "uploads"
+    monkeypatch.setattr("web.app.UPLOADS_DIR", uploads)
+    app = security_app(tmp_path)
+    app.extensions["fivebr_users"].create_user(
+        "editor-path",
+        "editor-password-123",
+        role="editor",
+    )
+    client = app.test_client()
+    assert login(client, "editor-path", "editor-password-123").status_code == 302
+    token = token_from(client.get("/analyze-log"))
+    calls = []
+    monkeypatch.setattr(
+        "web.app.subprocess.run",
+        lambda command, **kwargs: (
+            calls.append(tuple(command))
+            or subprocess.CompletedProcess(
+                command,
+                0,
+                stdout="unexpected",
+                stderr="",
+            )
+        ),
+    )
+
+    response = client.post(
+        "/analyze-log",
+        data={
+            "csrf_token": token,
+            "path": "/etc/passwd",
+            "min_seen": "10",
+            "limit": "100",
+        },
+    )
+
+    assert response.status_code == 200
+    assert calls == []
+    assert list(uploads.iterdir()) == []
+
+
+def test_analyze_log_uses_server_generated_upload_path(tmp_path, monkeypatch):
+    uploads = tmp_path / "uploads"
+    calls = []
+    monkeypatch.setattr("web.app.UPLOADS_DIR", uploads)
+    monkeypatch.setattr(
+        "web.app.subprocess.run",
+        lambda command, **kwargs: (
+            calls.append(tuple(command))
+            or subprocess.CompletedProcess(
+                command,
+                0,
+                stdout="ok",
+                stderr="",
+            )
+        ),
+    )
+    monkeypatch.setattr("web.app.create_backup", lambda *args: None)
+    monkeypatch.setattr("web.app.log_event", lambda *args: None)
+    app = security_app(tmp_path)
+    app.extensions["fivebr_users"].create_user(
+        "editor-upload",
+        "editor-password-123",
+        role="editor",
+    )
+    client = app.test_client()
+    assert login(client, "editor-upload", "editor-password-123").status_code == 302
+    token = token_from(client.get("/analyze-log"))
+
+    response = client.post(
+        "/analyze-log",
+        data={
+            "csrf_token": token,
+            "path": "/etc/passwd",
+            "min_seen": "10",
+            "limit": "100",
+            "querylog": (
+                BytesIO(b"{\"data\": []}"),
+                "../../querylog.json",
+            ),
+        },
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 200
+    assert len(calls) == 1
+    assert calls[0][3] == "analyze-log"
+    uploaded = Path(calls[0][4]).resolve()
+    assert uploaded.is_relative_to(uploads.resolve())
+    assert uploaded.parent == uploads.resolve()
+    assert uploaded.name != "querylog.json"
+    assert uploaded.suffix == ".json"
+    assert uploaded.read_bytes() == b"{\"data\": []}"
 
 
 @pytest.mark.parametrize("path", [

@@ -2,7 +2,6 @@
 {% block content %}
 <h1>{{ t('analyze_log') }}</h1>{% if output %}<span class="visually-hidden">{{ t('exit_code') }}: {{ code }}</span>{% endif %}
 <form method="post" enctype="multipart/form-data" class="card mb-4"><div class="card-body">
-  <div class="mb-3"><label class="form-label">{{ t('server_path') }}</label><input class="form-control" name="path" placeholder="/opt/adguard/work/data/querylog.json"></div>
   <div class="mb-3"><label class="form-label">{{ t('upload_querylog') }}</label><input class="form-control" type="file" name="querylog"></div>
   <div class="row"><div class="col"><label class="form-label">{{ t('min_seen') }}</label><input class="form-control" name="min_seen" value="10"></div><div class="col"><label class="form-label">{{ t('limit') }}</label><input class="form-control" name="limit" value="100"></div></div>
   <button class="btn btn-primary mt-3">{{ t('analyze') }} Log</button>
