@@ -345,6 +345,55 @@ def test_login_rate_limit_ignores_forwarded_address_and_clears_on_success(
     assert remaining == 0
 
 
+def test_production_requires_trusted_hosts(tmp_path, monkeypatch):
+    monkeypatch.setenv("FIVEBR_ENV", "production")
+    monkeypatch.setenv("FIVEBR_SECRET_KEY", "production-test-secret")
+    monkeypatch.delenv("FIVEBR_TRUSTED_HOSTS", raising=False)
+
+    with pytest.raises(
+        RuntimeError,
+        match="FIVEBR_TRUSTED_HOSTS is required",
+    ):
+        create_app({
+            "USER_DATABASE": tmp_path / "production-users.sqlite3",
+        })
+
+
+def test_production_accepts_explicit_trusted_hosts(
+    tmp_path,
+    monkeypatch,
+):
+    monkeypatch.setenv("FIVEBR_ENV", "production")
+    monkeypatch.setenv("FIVEBR_SECRET_KEY", "production-test-secret")
+    monkeypatch.setenv(
+        "FIVEBR_TRUSTED_HOSTS",
+        "filters.example.test, admin.example.test",
+    )
+
+    app = create_app({
+        "USER_DATABASE": tmp_path / "production-users.sqlite3",
+    })
+
+    assert app.config["TRUSTED_HOSTS"] == [
+        "filters.example.test",
+        "admin.example.test",
+    ]
+
+
+def test_language_cookie_is_httponly(tmp_path):
+    app = security_app(tmp_path)
+    response = app.test_client().get("/language/ar")
+    cookies = response.headers.getlist("Set-Cookie")
+
+    language_cookie = next(
+        cookie
+        for cookie in cookies
+        if cookie.startswith("fivebr_lang=")
+    )
+    assert "HttpOnly" in language_cookie
+    assert "SameSite=Lax" in language_cookie
+
+
 def test_development_entrypoint_binds_loopback_only(monkeypatch):
     calls = []
     monkeypatch.delenv("FIVEBR_ENV", raising=False)
@@ -590,6 +639,10 @@ def test_session_lifetime_is_bounded(tmp_path):
 
 def test_production_requires_secret_and_enables_secure_cookies(tmp_path, monkeypatch):
     monkeypatch.setenv("FIVEBR_ENV", "production")
+    monkeypatch.setenv(
+        "FIVEBR_TRUSTED_HOSTS",
+        "filters.example.test",
+    )
     monkeypatch.delenv("FIVEBR_SECRET_KEY", raising=False)
     with pytest.raises(RuntimeError):
         create_app({"USER_DATABASE": tmp_path / "missing-secret.sqlite3"})

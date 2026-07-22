@@ -281,8 +281,22 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
     app = Flask(__name__)
     production = os.environ.get("FIVEBR_ENV", "development").lower() == "production"
     configured_secret = os.environ.get("FIVEBR_SECRET_KEY")
+    trusted_hosts = [
+        host.strip()
+        for host in os.environ.get(
+            "FIVEBR_TRUSTED_HOSTS",
+            "",
+        ).split(",")
+        if host.strip()
+    ]
     if production and not configured_secret:
-        raise RuntimeError("FIVEBR_SECRET_KEY is required when FIVEBR_ENV=production")
+        raise RuntimeError(
+            "FIVEBR_SECRET_KEY is required when FIVEBR_ENV=production"
+        )
+    if production and not trusted_hosts:
+        raise RuntimeError(
+            "FIVEBR_TRUSTED_HOSTS is required when FIVEBR_ENV=production"
+        )
     app.config["SECRET_KEY"] = configured_secret or secrets.token_hex(32)
     app.config["MAX_CONTENT_LENGTH"] = 64 * 1024 * 1024
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
@@ -309,7 +323,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         LOGIN_BLOCK_SECONDS=int(
             os.environ.get("FIVEBR_LOGIN_BLOCK_SECONDS", "900")
         ),
-        TRUSTED_HOSTS=[host.strip() for host in os.environ.get("FIVEBR_TRUSTED_HOSTS", "").split(",") if host.strip()] or None,
+        TRUSTED_HOSTS=trusted_hosts or None,
     )
     if test_config:
         app.config.update(test_config)
@@ -430,6 +444,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         response = make_response(redirect(safe_next(request.args.get("next"), url_for("dashboard"))))
         response.set_cookie(
             "fivebr_lang", lang, max_age=60 * 60 * 24 * 365,
+            httponly=True,
             samesite="Lax", secure=bool(app.config["SESSION_COOKIE_SECURE"]),
         )
         return response
