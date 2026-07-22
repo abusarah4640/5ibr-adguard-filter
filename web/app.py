@@ -985,15 +985,35 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
             code, output = globals()["run_fivebr"]("build")
 
             if code != 0:
+                rollback_domain = suggestion.get("Domain", "")
+                rolled_back = remove_domain(rollback_domain)
+                decision = (
+                    "approved-build-failed"
+                    if rolled_back
+                    else "approved-build-rollback-failed"
+                )
+                details = output or reason
+                if not rolled_back:
+                    details = (
+                        f"{details}; automatic database rollback failed"
+                    )
                 append_decision(
                     suggestion,
-                    "approved-build-failed",
-                    output or reason,
+                    decision,
+                    details,
                     **guardrail_evidence,
                 )
-                log_event("review_queue.build", domain, "error", output)
+                log_event(
+                    "review_queue.build",
+                    domain,
+                    "error",
+                    details,
+                )
                 flash(translate("domain_added_build_failed"), "danger")
-                return redirect(request.form.get("next") or url_for("review_queue"))
+                return redirect(
+                    request.form.get("next")
+                    or url_for("review_queue")
+                )
 
             remove_suggestion(domain)
             append_decision(
