@@ -79,25 +79,21 @@ def test_build_does_not_write_to_source_tree(
 
     initialize_project(runtime)
 
-    sentinel = (
-        PROJECT_ROOT
-        / "releases"
-        / ".stage63d-sentinel"
+    source_directories = (
+        PROJECT_ROOT / "config",
+        PROJECT_ROOT / "filters",
+        PROJECT_ROOT / "releases",
     )
 
-    sentinel.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    def source_snapshot():
+        return {
+            file.relative_to(PROJECT_ROOT): file.read_bytes()
+            for directory in source_directories
+            for file in directory.rglob("*")
+            if file.is_file()
+        }
 
-    sentinel.write_text(
-        "unchanged",
-        encoding="utf-8",
-    )
-
-    before = sentinel.read_text(
-        encoding="utf-8"
-    )
+    before = source_snapshot()
 
     environment = os.environ.copy()
 
@@ -123,11 +119,7 @@ def test_build_does_not_write_to_source_tree(
         check=False,
     )
 
-    after = sentinel.read_text(
-        encoding="utf-8"
-    )
-
-    sentinel.unlink()
+    after = source_snapshot()
 
     assert after == before
 
