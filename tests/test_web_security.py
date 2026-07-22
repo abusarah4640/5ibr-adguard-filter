@@ -245,6 +245,106 @@ def test_logout_rotates_session_and_clears_remember_cookie(tmp_path):
     assert post_logout_token != authenticated_token
 
 
+def test_login_rate_limit_blocks_repeated_failures(tmp_path):
+    app = security_app(
+        tmp_path,
+        LOGIN_FAILURE_LIMIT=3,
+        LOGIN_FAILURE_WINDOW_SECONDS=900,
+        LOGIN_BLOCK_SECONDS=120,
+    )
+    app.extensions["fivebr_users"].create_user(
+        "limited-owner",
+        "limited-password-123",
+        role="admin",
+    )
+    client = app.test_client()
+    token = token_from(client.get("/login"))
+
+    for _ in range(2):
+        response = client.post(
+            "/login",
+            data={
+                "csrf_token": token,
+                "username": "limited-owner",
+                "password": "wrong-password",
+            },
+            environ_base={"REMOTE_ADDR": "198.51.100.10"},
+        )
+        assert response.status_code == 200
+
+    blocked = client.post(
+        "/login",
+        data={
+            "csrf_token": token,
+            "username": "limited-owner",
+            "password": "wrong-password",
+        },
+        environ_base={"REMOTE_ADDR": "198.51.100.10"},
+    )
+    assert blocked.status_code == 429
+    assert 1 <= int(blocked.headers["Retry-After"]) <= 120
+
+    correct_password_is_still_blocked = client.post(
+        "/login",
+        data={
+            "csrf_token": token,
+            "username": "limited-owner",
+            "password": "limited-password-123",
+        },
+        environ_base={"REMOTE_ADDR": "198.51.100.10"},
+    )
+    assert correct_password_is_still_blocked.status_code == 429
+
+
+def test_login_rate_limit_ignores_forwarded_address_and_clears_on_success(
+    tmp_path,
+):
+    app = security_app(
+        tmp_path,
+        LOGIN_FAILURE_LIMIT=2,
+        LOGIN_FAILURE_WINDOW_SECONDS=900,
+        LOGIN_BLOCK_SECONDS=120,
+    )
+    store = app.extensions["fivebr_users"]
+    store.create_user(
+        "successful-owner",
+        "successful-password-123",
+        role="admin",
+    )
+    client = app.test_client()
+    token = token_from(client.get("/login"))
+
+    failed = client.post(
+        "/login",
+        data={
+            "csrf_token": token,
+            "username": "successful-owner",
+            "password": "wrong-password",
+        },
+        headers={"X-Forwarded-For": "203.0.113.1"},
+        environ_base={"REMOTE_ADDR": "198.51.100.20"},
+    )
+    assert failed.status_code == 200
+
+    successful = client.post(
+        "/login",
+        data={
+            "csrf_token": token,
+            "username": "successful-owner",
+            "password": "successful-password-123",
+        },
+        headers={"X-Forwarded-For": "203.0.113.200"},
+        environ_base={"REMOTE_ADDR": "198.51.100.20"},
+    )
+    assert successful.status_code == 302
+
+    with store.connect() as db:
+        remaining = db.execute(
+            "SELECT COUNT(*) FROM web_login_attempts"
+        ).fetchone()[0]
+    assert remaining == 0
+
+
 def test_development_entrypoint_binds_loopback_only(monkeypatch):
     calls = []
     monkeypatch.delenv("FIVEBR_ENV", raising=False)

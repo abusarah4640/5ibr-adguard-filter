@@ -36,6 +36,7 @@ import subprocess
 import sys
 import os
 import re
+import hashlib
 import secrets
 import time
 from functools import wraps
@@ -299,6 +300,15 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         REMEMBER_COOKIE_NAME="fivebr_remember",
         CSRF_ENABLED=True,
         INSECURE_TEST_BYPASS=os.environ.get("FIVEBR_INSECURE_TEST_BYPASS") == "1",
+        LOGIN_FAILURE_LIMIT=int(
+            os.environ.get("FIVEBR_LOGIN_FAILURE_LIMIT", "5")
+        ),
+        LOGIN_FAILURE_WINDOW_SECONDS=int(
+            os.environ.get("FIVEBR_LOGIN_FAILURE_WINDOW_SECONDS", "900")
+        ),
+        LOGIN_BLOCK_SECONDS=int(
+            os.environ.get("FIVEBR_LOGIN_BLOCK_SECONDS", "900")
+        ),
         TRUSTED_HOSTS=[host.strip() for host in os.environ.get("FIVEBR_TRUSTED_HOSTS", "").split(",") if host.strip()] or None,
     )
     if test_config:
@@ -429,14 +439,45 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         if current_user.is_authenticated:
             return redirect(url_for("dashboard"))
         if request.method == "POST":
-            user = users.authenticate(request.form.get("username", ""), request.form.get("password", ""))
+            username = request.form.get("username", "").strip()
+            client_address = request.remote_addr or "unknown"
+            attempt_key = hashlib.sha256(
+                f"{client_address}\0{username.casefold()}".encode("utf-8")
+            ).hexdigest()
+            retry_after = users.login_retry_after(attempt_key)
+            if retry_after:
+                flash(translate("login_failed"), "danger")
+                response = make_response(render_template("login.html"), 429)
+                response.headers["Retry-After"] = str(retry_after)
+                return response
+
+            user = users.authenticate(
+                username,
+                request.form.get("password", ""),
+            )
             if user:
+                users.clear_login_failures(attempt_key)
                 session.clear()
                 login_user(user, remember=request.form.get("remember") == "on")
                 session["language"] = user.language
                 flash(translate("login_success"), "success")
-                return redirect(safe_next(request.args.get("next"), url_for("dashboard")))
+                return redirect(
+                    safe_next(request.args.get("next"), url_for("dashboard"))
+                )
+
+            retry_after = users.record_login_failure(
+                attempt_key,
+                limit=app.config["LOGIN_FAILURE_LIMIT"],
+                window_seconds=app.config[
+                    "LOGIN_FAILURE_WINDOW_SECONDS"
+                ],
+                block_seconds=app.config["LOGIN_BLOCK_SECONDS"],
+            )
             flash(translate("login_failed"), "danger")
+            if retry_after:
+                response = make_response(render_template("login.html"), 429)
+                response.headers["Retry-After"] = str(retry_after)
+                return response
         return render_template("login.html")
 
     @app.route("/logout", methods=["POST"])

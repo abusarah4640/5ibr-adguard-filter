@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import secrets
+import time
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
@@ -85,6 +86,14 @@ class UserStore:
                     "UPDATE web_users SET session_version = ? WHERE id = ?",
                     (secrets.token_urlsafe(32), row["id"]),
                 )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS web_login_attempts (
+                    attempt_key TEXT PRIMARY KEY,
+                    failures INTEGER NOT NULL DEFAULT 0,
+                    window_started REAL NOT NULL,
+                    blocked_until REAL NOT NULL DEFAULT 0
+                )"""
+            )
             count = db.execute("SELECT COUNT(*) FROM web_users").fetchone()[0]
             bootstrap_password = os.environ.get("FIVEBR_ADMIN_PASSWORD")
             if count == 0 and bootstrap_password:
@@ -123,6 +132,65 @@ class UserStore:
         ):
             return None
         return user
+
+    def login_retry_after(self, attempt_key: str) -> int:
+        now = time.time()
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT blocked_until FROM web_login_attempts "
+                "WHERE attempt_key = ?",
+                (attempt_key,),
+            ).fetchone()
+        if row is None:
+            return 0
+        return max(0, int(row["blocked_until"] - now + 0.999))
+
+    def record_login_failure(
+        self,
+        attempt_key: str,
+        *,
+        limit: int,
+        window_seconds: int,
+        block_seconds: int,
+    ) -> int:
+        now = time.time()
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute(
+                "SELECT failures, window_started, blocked_until "
+                "FROM web_login_attempts WHERE attempt_key = ?",
+                (attempt_key,),
+            ).fetchone()
+            if row is None or now - row["window_started"] >= window_seconds:
+                failures = 1
+                window_started = now
+            else:
+                failures = row["failures"] + 1
+                window_started = row["window_started"]
+            blocked_until = (
+                now + block_seconds
+                if failures >= limit
+                else max(0, row["blocked_until"] if row else 0)
+            )
+            db.execute(
+                """INSERT INTO web_login_attempts (
+                    attempt_key, failures, window_started, blocked_until
+                ) VALUES (?, ?, ?, ?)
+                ON CONFLICT(attempt_key) DO UPDATE SET
+                    failures = excluded.failures,
+                    window_started = excluded.window_started,
+                    blocked_until = excluded.blocked_until""",
+                (attempt_key, failures, window_started, blocked_until),
+            )
+        return max(0, int(blocked_until - now + 0.999))
+
+    def clear_login_failures(self, attempt_key: str) -> None:
+        with self.connect() as db:
+            db.execute(
+                "DELETE FROM web_login_attempts WHERE attempt_key = ?",
+                (attempt_key,),
+            )
+
 
     def has_users(self) -> bool:
         with self.connect() as db:
