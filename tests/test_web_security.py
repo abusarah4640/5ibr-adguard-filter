@@ -15,7 +15,7 @@ from web.auth import UserStore
 def security_app(tmp_path, **config):
     values = {
         "TESTING": True,
-        "SECURITY_TESTING": True,
+        "INSECURE_TEST_BYPASS": False,
         "SECRET_KEY": "security-test-secret",
         "USER_DATABASE": tmp_path / "security-users.sqlite3",
     }
@@ -173,6 +173,26 @@ def test_login_post_still_rejects_missing_csrf(tmp_path):
     app = security_app(tmp_path)
     response = app.test_client().post("/login", data={"username": "x", "password": "x"})
     assert response.status_code == 400
+
+
+def test_testing_mode_alone_does_not_bypass_security(tmp_path):
+    app = create_app({
+        "TESTING": True,
+        "INSECURE_TEST_BYPASS": False,
+        "SECRET_KEY": "testing-with-real-security",
+        "USER_DATABASE": tmp_path / "testing-users.sqlite3",
+    })
+    client = app.test_client()
+
+    protected = client.get("/")
+    assert protected.status_code == 302
+    assert "/login" in protected.headers["Location"]
+
+    login_without_csrf = client.post(
+        "/login",
+        data={"username": "x", "password": "x"},
+    )
+    assert login_without_csrf.status_code == 400
 
 
 def test_empty_user_database_fails_closed(tmp_path):

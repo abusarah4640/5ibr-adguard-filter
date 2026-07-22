@@ -6,6 +6,7 @@ from web.app import create_app
 def app_for(tmp_path):
     return create_app({
         "TESTING": True,
+        "INSECURE_TEST_BYPASS": True,
         "SECRET_KEY": "ui-polish-test-secret",
         "USER_DATABASE": tmp_path / "ui-users.sqlite3",
     })
@@ -44,7 +45,7 @@ def test_arabic_intelligence_has_no_known_english_diagnostic_messages(tmp_path):
 
 def test_arabic_csrf_message_is_actionable(tmp_path):
     app = create_app({
-        "TESTING": True, "SECURITY_TESTING": True,
+        "TESTING": True, "INSECURE_TEST_BYPASS": False,
         "SECRET_KEY": "csrf-ui-secret", "USER_DATABASE": tmp_path / "csrf-ui.sqlite3",
     })
     store = app.extensions["fivebr_users"]
@@ -61,7 +62,7 @@ def test_arabic_csrf_message_is_actionable(tmp_path):
 
 def test_arabic_unauthorized_message_is_localized(tmp_path):
     app = create_app({
-        "TESTING": True, "SECURITY_TESTING": True, "CSRF_ENABLED": False,
+        "TESTING": True, "INSECURE_TEST_BYPASS": False, "CSRF_ENABLED": False,
         "SECRET_KEY": "auth-ui-secret", "USER_DATABASE": tmp_path / "auth-ui.sqlite3",
     })
     client = app.test_client()

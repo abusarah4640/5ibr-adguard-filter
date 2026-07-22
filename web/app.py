@@ -298,6 +298,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         SESSION_COOKIE_NAME="fivebr_session",
         REMEMBER_COOKIE_NAME="fivebr_remember",
         CSRF_ENABLED=True,
+        INSECURE_TEST_BYPASS=os.environ.get("FIVEBR_INSECURE_TEST_BYPASS") == "1",
         TRUSTED_HOSTS=[host.strip() for host in os.environ.get("FIVEBR_TRUSTED_HOSTS", "").split(",") if host.strip()] or None,
     )
     if test_config:
@@ -325,7 +326,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         def decorate(view):
             @wraps(view)
             def wrapped(*args, **kwargs):
-                if app.testing and not app.config.get("SECURITY_TESTING"):
+                if app.testing and app.config.get("INSECURE_TEST_BYPASS", False):
                     return view(*args, **kwargs)
                 if not current_user.is_authenticated:
                     return login_manager.unauthorized()
@@ -358,7 +359,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
     def verify_csrf():
         if request.method != "POST" or not app.config.get("CSRF_ENABLED", True):
             return None
-        if app.testing and not app.config.get("SECURITY_TESTING"):
+        if app.testing and app.config.get("INSECURE_TEST_BYPASS", False):
             return None
         if not current_user.is_authenticated and request.endpoint != "login":
             fallback = url_for("dashboard")
@@ -741,7 +742,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         if action not in allowed:
             flash(translate("invalid_action"), "danger")
             return redirect(url_for("dashboard"))
-        if action == "build" and not (app.testing and not app.config.get("SECURITY_TESTING")) and not current_user.has_role("admin"):
+        if action == "build" and not (app.testing and app.config.get("INSECURE_TEST_BYPASS", False)) and not current_user.has_role("admin"):
             return (translate("forbidden"), 403)
         if action == "build":
             create_backup("web-build")

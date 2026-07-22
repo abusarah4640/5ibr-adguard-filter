@@ -6,7 +6,7 @@ from web.app import create_app
 def make_app(tmp_path):
     return create_app({
         "TESTING": True,
-        "SECURITY_TESTING": True,
+        "INSECURE_TEST_BYPASS": False,
         "SECRET_KEY": "v201-auth-ux-secret",
         "USER_DATABASE": tmp_path / "v201-users.sqlite3",
     })

@@ -7,6 +7,7 @@ from web.app import confidence_level, explain_suggestion, normalize_unknown, rec
 def make_app(tmp_path: Path):
     return create_app({
         "TESTING": True,
+        "INSECURE_TEST_BYPASS": True,
         "SECRET_KEY": "test-secret",
         "USER_DATABASE": tmp_path / "users.sqlite3",
     })
@@ -54,7 +55,7 @@ def test_hashed_login_remember_logout_and_settings(tmp_path):
 
 def test_mutating_routes_require_authentication(tmp_path):
     app = create_app({
-        "TESTING": True, "SECURITY_TESTING": True, "CSRF_ENABLED": False,
+        "TESTING": True, "INSECURE_TEST_BYPASS": False, "CSRF_ENABLED": False,
         "SECRET_KEY": "test-secret", "USER_DATABASE": tmp_path / "users.sqlite3",
     })
     app.extensions["fivebr_users"].create_user("owner", "correct-horse-battery", role="admin")
