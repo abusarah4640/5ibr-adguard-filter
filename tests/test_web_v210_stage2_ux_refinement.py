@@ -101,4 +101,4 @@ def test_security_and_route_contracts_remain_present():
 
 
 def test_runtime_version_is_stage2():
-    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "2.2.0"
+    assert (ROOT / "VERSION").read_text(encoding="utf-8").strip() == "2.2.0rc1"

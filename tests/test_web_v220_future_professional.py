@@ -82,5 +82,5 @@ def test_future_copy_exists_in_both_locales():
     assert all(TRANSLATIONS[lang][key] for lang in ("en", "ar") for key in keys)
 
 
-def test_runtime_version_is_v220():
-    assert read("VERSION").strip() == "2.2.0"
+def test_runtime_version_is_v220_rc1():
+    assert read("VERSION").strip() == "2.2.0rc1"

@@ -142,7 +142,7 @@ Stabilization documents:
 - `docs/adr/ADR-004-metadata-preservation.md`
 - `docs/releases/v1.0.0-beta.md`
 
-Current stabilization target: `v1.0.0-beta`.
+Current stabilization target: `2.2.0rc1` (`NOT READY`; maintainer self-review only).
 
 ## Web Admin UI
 
@@ -186,4 +186,4 @@ Mutable data is stored inside `FIVEBR_HOME`.
 
 The installed package does not contain production policies, audit logs, reports, runtime backups, suggestion decisions, or production database rows.
 
-See `RELEASE_NOTES.md` for the complete 1.9.0 final release notes.
+See `RELEASE_NOTES.md` for the current 2.2.0rc1 candidate notes. Historical 1.9.0 notes are archived at `docs/RELEASE_NOTES_1.9.0.md`.

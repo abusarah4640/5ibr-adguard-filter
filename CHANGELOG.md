@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.2.0rc1] - Unreleased
+
+### Candidate status
+
+- Unified runtime, CLI, and Python package metadata on `2.2.0rc1`.
+- Maintainer qualification completed with 709 automated tests.
+- Python 3.11 through 3.14 and installed-Wheel CI qualification passed.
+- Independent technical review remains pending.
+- PR #9 remains Draft; no merge, tag, or public release is authorized.
+- Release status remains NOT READY.
+
+### Security and recovery
+
+- Required authentication, RBAC, and CSRF protection for sensitive Web routes.
+- Added session rotation, session revocation, and persistent login throttling.
+- Required production secrets and trusted hosts and enabled Secure cookies.
+- Confined Gunicorn to loopback behind Cloudflare Access.
+- Removed public IPv4 and IPv6 access to port 8089.
+- Completed and documented a production deployment and rollback drill.
+
+### Build and validation
+
+- Added staged atomic builds with validation before promotion and rollback.
+- Added strict runtime artifact, filter-rule, CSV, and release validation.
+- Added database-to-filter coherence and deterministic SHA-256 build tests.
+- Locked Python dependencies and pinned GitHub Actions immutably.
+
 ## [2.0.0] - 2026-07-17
 
 ### Added
