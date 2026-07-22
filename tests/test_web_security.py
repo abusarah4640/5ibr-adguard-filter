@@ -30,7 +30,28 @@ def login(client, username: str, password: str):
     })
 
 
+
+@pytest.mark.parametrize("path", [
+    "/",
+    "/intelligence",
+    "/domains",
+    "/analysis",
+    "/review-queue",
+    "/reports/suggestions",
+    "/reports/suggestions.md",
+    "/releases",
+    "/audit",
+    "/releases/example.txt",
+])
+def test_sensitive_get_routes_require_authentication(tmp_path, path):
+    app = security_app(tmp_path)
+    response = app.test_client().get(path)
+    assert response.status_code == 302
+    assert "/login" in response.headers["Location"]
+
+
 @pytest.mark.parametrize(("path", "data"), [
+
     ("/logout", {}), ("/settings", {}), ("/settings/password", {}),
     ("/readiness/manual-approval", {}), ("/domains/add", {}),
     ("/domains/example.test/edit", {}), ("/domains/example.test/delete", {}),

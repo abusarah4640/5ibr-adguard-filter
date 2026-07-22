@@ -503,6 +503,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         return result.returncode, output.strip()
 
     @app.route("/")
+    @roles_required("admin", "editor", "viewer")
     def dashboard() -> str:
         rows = load_database()
         releases = release_rows()
@@ -597,6 +598,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         return redirect(url_for("dashboard"))
 
     @app.route("/intelligence")
+    @roles_required("admin", "editor", "viewer")
     def intelligence_report_page() -> str:
         rows = load_database()
         intelligence = build_intelligence_summary()
@@ -624,6 +626,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         )
 
     @app.route("/domains")
+    @roles_required("admin", "editor", "viewer")
     def domains() -> str:
         query = request.args.get("q", "").strip().lower()
         vendor = request.args.get("vendor", "").strip()
@@ -784,6 +787,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
 
 
     @app.route("/analysis")
+    @roles_required("admin", "editor", "viewer")
     def analysis() -> str:
         all_rows = load_suggestions()
         filtered_rows = filter_suggestion_rows(all_rows, request.args)
@@ -813,6 +817,7 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
 
 
     @app.route("/review-queue")
+    @roles_required("admin", "editor", "viewer")
     def review_queue() -> str:
         include_decided = request.args.get("include_decided") == "1"
         all_rows = load_review_queue(include_decided=include_decided)
@@ -950,11 +955,13 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         return redirect(request.form.get("next") or url_for("review_queue"))
 
     @app.route("/reports/suggestions")
+    @roles_required("admin", "editor", "viewer")
     def suggestions() -> str:
         rows = load_suggestions()
         return render_template("suggestions.html", rows=rows)
 
     @app.route("/reports/suggestions.md")
+    @roles_required("admin", "editor", "viewer")
     def suggestions_markdown() -> str:
         path = REPORTS_DIR / "suggestions.md"
         text = path.read_text(encoding="utf-8") if path.exists() else translate("no_suggestions_report")
@@ -1004,14 +1011,17 @@ def create_app(test_config: dict[str, object] | None = None) -> Flask:
         return redirect(url_for("suggestions"))
 
     @app.route("/releases")
+    @roles_required("admin", "editor", "viewer")
     def releases() -> str:
         return render_template("releases.html", files=release_rows())
 
     @app.route("/audit")
+    @roles_required("admin", "editor", "viewer")
     def audit_log() -> str:
         return render_template("audit.html", events=recent_events(100))
 
     @app.route("/releases/<path:filename>")
+    @roles_required("admin", "editor", "viewer")
     def download_release(filename: str):
         return send_from_directory(RELEASES_DIR, filename, as_attachment=False)
 

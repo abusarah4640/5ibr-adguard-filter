@@ -25,19 +25,13 @@ def login(client, username: str, password: str):
     })
 
 
-def test_guest_navbar_and_public_pages_are_read_only(tmp_path):
+
+def test_guest_sensitive_pages_redirect_to_login(tmp_path):
     client = make_app(tmp_path).test_client()
-    dashboard = client.get("/").get_data(as_text=True)
-    domains = client.get("/domains").get_data(as_text=True)
-    releases = client.get("/releases").get_data(as_text=True)
-    review = client.get("/review-queue").get_data(as_text=True)
-    assert 'href="/login"' in dashboard
-    assert 'action="/logout"' not in dashboard
-    assert 'href="/domains/add"' not in domains
-    assert "/edit" not in domains and "/delete" not in domains
-    assert 'action="/actions/build"' not in releases
-    assert "/review-queue/" not in review
-    assert all(client.get(path).status_code == 200 for path in ("/", "/domains", "/releases", "/review-queue"))
+    for path in ("/", "/domains", "/releases", "/review-queue"):
+        response = client.get(path)
+        assert response.status_code == 302
+        assert response.headers["Location"].startswith("/login?next=")
 
 
 def test_admin_editor_viewer_see_only_permitted_controls(tmp_path):
