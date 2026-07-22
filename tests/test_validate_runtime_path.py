@@ -30,6 +30,26 @@ def test_validate_uses_fivebr_home_from_arbitrary_cwd(
         PROJECT_ROOT
     )
 
+    built = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "fivebr",
+            "build",
+        ],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert built.returncode == 0, (
+        built.stdout
+        + "\n"
+        + built.stderr
+    )
+
     completed = subprocess.run(
         [
             sys.executable,
