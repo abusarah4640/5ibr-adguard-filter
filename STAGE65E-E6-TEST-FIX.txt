@@ -1,5 +1,0 @@
-Stage 65E-E6 regression test compatibility fix.
-
-Updated tests/test_dashboard_readiness_history.py to mock the E6 decision engine,
-so the E5 history card and E6 decision card are rendered together during the test.
-No production code is changed.

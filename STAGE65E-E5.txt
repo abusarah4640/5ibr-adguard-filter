@@ -1,8 +1,0 @@
-Stage 65E-E5 — Readiness History and Trends
-
-Adds:
-- JSONL readiness observation history
-- duplicate-state suppression
-- improving/stable/regressing trend calculation
-- dashboard history and trend display
-- no enforcement activation or approval mutation
