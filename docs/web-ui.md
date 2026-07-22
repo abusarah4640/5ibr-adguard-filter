@@ -1,42 +1,57 @@
 # 5ibr Web Admin UI
 
-The Web UI is a lightweight Flask admin interface on top of the existing toolkit.
-It does not replace the CLI. It provides browser access to common workflows.
+The Web UI is an authenticated Flask administration interface on top of the
+existing toolkit. It does not replace the CLI.
 
-## Start
+## Local development
+
+Install the project and start the development server:
 
 ```bash
 cd /opt/5ibr
 source .venv/bin/activate
-pip install -e .
+python -m pip install --editable .
 fivebr-web
 ```
 
-Open:
+The development entry point listens on loopback only:
 
 ```text
-http://SERVER-IP:8089
+http://127.0.0.1:8089
 ```
 
-Example:
+`fivebr-web` is not a production server and refuses to start when
+`FIVEBR_ENV=production`.
+
+## Production
+
+Run the WSGI application with a production server such as Gunicorn. Configure
+the service through a protected environment file containing at least:
 
 ```text
-http://<SERVER_LAN_IP>:8089
+FIVEBR_ENV=production
+FIVEBR_SECRET_KEY=<random-secret>
+FIVEBR_TRUSTED_HOSTS=filters.example.com
+FIVEBR_COOKIE_SECURE=true
 ```
+
+Example Gunicorn command:
+
+```bash
+gunicorn \
+  --workers 2 \
+  --bind 127.0.0.1:8089 \
+  web.app:app
+```
+
+Place Gunicorn behind a TLS reverse proxy. Do not expose the Flask development
+server or Gunicorn directly to an untrusted network.
 
 ## Features
 
-- Dashboard.
-- List and search domains.
-- Add domains.
-- Edit domains.
-- Delete domains.
-- Run doctor, validate and build.
-- Analyze a single domain.
-- Analyze an AdGuard Home query log.
-- View and download release files.
-
-## Notes
-
-This initial Web UI is intended for trusted local/admin use. For public exposure,
-place it behind Nginx Proxy Manager and add authentication.
+- Authenticated dashboard and operational diagnostics.
+- Role-controlled domain and review workflows.
+- Query-log uploads confined to the runtime upload directory.
+- Release, suggestion, readiness, and audit views.
+- Doctor, validate, build, and analysis actions subject to authorization and
+  CSRF protection.

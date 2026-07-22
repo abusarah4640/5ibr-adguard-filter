@@ -146,20 +146,21 @@ Current stabilization target: `v1.0.0-beta`.
 
 ## Web Admin UI
 
-The toolkit also includes a lightweight Flask Web UI for trusted admin use.
+The toolkit includes an authenticated Flask administration UI.
+
+For local development only:
 
 ```bash
-pip install -e .
+python -m pip install --editable .
 fivebr-web
 ```
 
-Open:
+Open `http://127.0.0.1:8089`. The development entry point is loopback-only and
+refuses to run when `FIVEBR_ENV=production`.
 
-```text
-http://SERVER-IP:8089
-```
-
-For more details, see `docs/web-ui.md`.
+For production, run `web.app:app` with a production WSGI server bound to
+loopback behind a TLS reverse proxy. See `docs/web-ui.md` for the required
+security settings.
 
 <!-- fivebr-runtime-release -->
 

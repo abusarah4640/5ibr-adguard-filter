@@ -8,7 +8,7 @@ from datetime import timedelta
 
 import pytest
 
-from web.app import create_app
+from web.app import create_app, main
 from web.auth import UserStore
 
 
@@ -173,6 +173,33 @@ def test_login_post_still_rejects_missing_csrf(tmp_path):
     app = security_app(tmp_path)
     response = app.test_client().post("/login", data={"username": "x", "password": "x"})
     assert response.status_code == 400
+
+
+def test_development_entrypoint_binds_loopback_only(monkeypatch):
+    calls = []
+    monkeypatch.delenv("FIVEBR_ENV", raising=False)
+    monkeypatch.setenv("FIVEBR_DEV_PORT", "8090")
+    monkeypatch.setattr(
+        "web.app.app.run",
+        lambda **kwargs: calls.append(kwargs),
+    )
+
+    assert main() == 0
+    assert calls == [{"host": "127.0.0.1", "port": 8090}]
+
+
+def test_development_entrypoint_refuses_production(monkeypatch):
+    calls = []
+    monkeypatch.setenv("FIVEBR_ENV", "production")
+    monkeypatch.setattr(
+        "web.app.app.run",
+        lambda **kwargs: calls.append(kwargs),
+    )
+
+    with pytest.raises(RuntimeError, match="development server is disabled"):
+        main()
+
+    assert calls == []
 
 
 def test_testing_mode_alone_does_not_bypass_security(tmp_path):

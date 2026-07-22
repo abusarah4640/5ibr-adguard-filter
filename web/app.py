@@ -1070,7 +1070,15 @@ app = create_app()
 
 
 def main() -> int:
-    app.run(host="0.0.0.0", port=8089)
+    if os.environ.get("FIVEBR_ENV", "development").lower() == "production":
+        raise RuntimeError(
+            "The Flask development server is disabled in production; "
+            "run web.app:app with a production WSGI server"
+        )
+    app.run(
+        host="127.0.0.1",
+        port=int(os.environ.get("FIVEBR_DEV_PORT", "8089")),
+    )
     return 0
 
 
