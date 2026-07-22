@@ -1,5 +1,2 @@
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||eic.homeprv.lgtvcommon.com^
-||eic.rdl.lgtvcommon.com^
+eic.homeprv.lgtvcommon.com
+eic.rdl.lgtvcommon.com

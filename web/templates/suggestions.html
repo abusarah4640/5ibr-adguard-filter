@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>{{ t('suggestions') }}</h1>
+  <a class="btn btn-outline-secondary" href="{{ url_for('suggestions_markdown') }}">{{ t('markdown_report') }}</a>
+</div>
+
+{% if not rows %}
+<div class="card"><div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-lightbulb"></i></span><h2 class="h5 text-body">{{ t('no_suggestions') }}</h2><p>{{ t('suggestions_empty_desc') }}</p>{% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-primary" href="{{ url_for('analyze_log') }}"><i class="bi bi-file-earmark-bar-graph"></i> {{ t('analyze_log') }}</a>{% endif %}</div></div>
+{% else %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{{ t('domain') }}</th>
+          <th>{{ t('seen') }}</th>
+          <th>{{ t('vendor') }}</th>
+          <th>{{ t('category') }}</th>
+          <th>{{ t('filter') }}</th>
+          <th>{{ t('confidence') }}</th>
+          <th>{{ t('recommendation') }}</th>
+          <th>{{ t('blocking_policy') }}</th>{# Blocking Policy #}
+          <th>{{ t('actions') }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for row in rows %}
+        {% set policy = row.get('Blocking Policy', 'unknown') %}
+
+        {% if policy == 'do-not-block' %}
+          {% set policy_color = 'success' %}
+        {% elif policy == 'safe-to-block' %}
+          {% set policy_color = 'danger' %}
+        {% elif policy in ['needs-testing', 'likely-safe'] %}
+          {% set policy_color = 'warning' %}
+        {% else %}
+          {% set policy_color = 'secondary' %}
+        {% endif %}
+
+        <tr>
+          <td>
+            <code>{{ row.Domain }}</code>
+            <br>
+            <small class="text-muted">{{ row.Root }}</small>
+          </td>
+
+          <td>{{ row.Seen }}</td>
+          <td>{{ translate_vendor(row['Suggested Vendor']) }}</td>
+          <td>{{ translate_category(row['Suggested Category']) }}</td>
+          <td>{{ translate_status(row['Suggested Filter']) }}</td>
+          <td>{{ row.Confidence }}</td>
+          <td>{{ translate_recommendation(row.Recommendation) }}</td>
+
+          <td>
+            <span
+              class="badge text-bg-{{ policy_color }}"
+              title="{{ translate_dynamic_text(row.get('Blocking Policy Reason', '')) }}"
+            >
+              {{ t('policy_' ~ policy|replace('-', '_')) }}
+              <span class="visually-hidden">{{ policy }}</span>
+            </span>
+
+            {% if row.get('Blocking Policy Reason') %}
+            <div class="small text-muted mt-1">
+              {{ translate_dynamic_text(row.get('Blocking Policy Reason')) }}
+            </div>
+            {% endif %}
+
+            {% if row.get('Blocking Policy Source') %}
+            <div class="small text-muted">
+              {{ t('source') }}: {{ translate_dynamic_text(row.get('Blocking Policy Source')) }}{# Source #}
+            </div>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a
+              class="btn btn-sm btn-success"
+              href="{{ url_for('approve_suggestion', domain=row.Domain) }}"
+            >
+              {{ t('approve_edit') }}
+            </a>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}
+            <form
+              class="d-inline"
+              method="post"
+              action="{{ url_for('reject_suggestion', domain=row.Domain) }}"
+              onsubmit="return confirm('{{ t('reject') }} {{ row.Domain }}?')"
+            >
+              <button class="btn btn-sm btn-outline-danger">
+                {{ t('reject') }}
+              </button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

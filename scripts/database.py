@@ -10,8 +10,18 @@ import csv
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DATABASE = ROOT / "database" / "domains.csv"
+from scripts.runtime.paths import (
+    get_runtime_paths,
+)
+
+
+RUNTIME_PATHS = get_runtime_paths()
+
+ROOT = RUNTIME_PATHS.root
+DATABASE = (
+    RUNTIME_PATHS.database
+    / "domains.csv"
+)
 
 FIELDNAMES = [
     "Domain",

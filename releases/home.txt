@@ -6,58 +6,37 @@
 !
 
 ! ===== ADS =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||doubleclick.net^
-||googleads.g.doubleclick.net^
-||pagead2.googlesyndication.com^
+doubleclick.net
+googleads.g.doubleclick.net
+pagead2.googlesyndication.com
 
 ! ===== PRIVACY =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||activity.windows.com^
+activity.windows.com
 
 ! ===== TELEMETRY =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||app-measurement.com^
-||browser.events.data.microsoft.com^
-||firebase-settings.crashlytics.com^
-||firebasecrashlytics.googleapis.com^
-||firebaseinstallations.googleapis.com^
-||firebaselogging.googleapis.com^
-||mobile.events.data.microsoft.com^
-||settings-win.data.microsoft.com^
-||v10.events.data.microsoft.com^
-||watson.telemetry.microsoft.com^
+app-measurement.com
+browser.events.data.microsoft.com
+firebase-settings.crashlytics.com
+firebasecrashlytics.googleapis.com
+firebaseinstallations.googleapis.com
+firebaselogging.googleapis.com
+mobile.events.data.microsoft.com
+settings-win.data.microsoft.com
+v10.events.data.microsoft.com
+watson.telemetry.microsoft.com
 
 ! ===== SOCIAL =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||connect.facebook.net^
-||graph.facebook.com^
+connect.facebook.net
+graph.facebook.com
 
 ! ===== MOBILE =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||metrics.data.hicloud.com^
-||tracking.coloros.com^
-||tracking.miui.com^
+metrics.data.hicloud.com
+tracking.coloros.com
+tracking.miui.com
 
 ! ===== GAMING =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||telemetry.riotgames.com^
+telemetry.riotgames.com
 
 ! ===== SMART-TV =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||eic.homeprv.lgtvcommon.com^
-||eic.rdl.lgtvcommon.com^
+eic.homeprv.lgtvcommon.com
+eic.rdl.lgtvcommon.com

@@ -18,17 +18,17 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 
-      - name: Install Dependencies
+      - name: Install locked dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pytest
+          python -m pip install --require-hashes -r requirements/ci.lock
+          python -m pip install --no-deps --no-build-isolation --editable .
 
       - name: Validate Filters
         run: |
@@ -41,6 +41,10 @@ jobs:
       - name: Build Releases
         run: |
           python fivebr.py build
+
+      - name: Validate Built Releases
+        run: |
+          python fivebr.py validate
 
       - name: Analyze Query Log (Optional)
         run: |
@@ -60,15 +64,7 @@ jobs:
           fi
 
       - name: Upload Release Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: fivebr-releases
           path: releases/
-
-      - name: Upload Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: fivebr-reports
-          path: reports/
-          if-no-files-found: ignore

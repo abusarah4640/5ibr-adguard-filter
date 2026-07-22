@@ -1,0 +1,18 @@
+[Unit]
+Description=5ibr Web Administration
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ibrahim
+Group=ibrahim
+WorkingDirectory=/opt/5ibr
+EnvironmentFile=/etc/fivebr-web.env
+ExecStart=/opt/5ibr/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8089 --timeout 60 --graceful-timeout 30 --keep-alive 5 web.app:app
+Restart=always
+RestartSec=5
+TimeoutStopSec=45
+
+[Install]
+WantedBy=multi-user.target

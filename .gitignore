@@ -1,24 +1,92 @@
-# Python
+# Python bytecode and caches
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
 
-# Reports
-reports/*.csv
-reports/*.md
-
-# Local files
-querylog.json
+# Packaging outputs
+build/
+dist/
+*.egg-info/
+.eggs/
 
 # Virtual environments
 .venv/
 venv/
+env/
 
-# IDE
+# Editors and operating systems
 .vscode/
 .idea/
-
-# macOS
 .DS_Store
-
-# Windows
 Thumbs.db
+*~
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Runtime databases
+data/*.sqlite
+data/*.sqlite3
+data/*.db
+data/web_users.sqlite3
+
+# Runtime and private operational data
+data/querylogs/
+data/audit/
+data/backups/
+querylog.json
+
+# Local knowledge backups
+data/knowledge/*.before-*
+data/knowledge/*.bak
+data/knowledge/*.orig
+data/knowledge/*.rej
+
+# Generated top-level reports
+reports/suggestions.csv
+reports/suggestions.md
+reports/suggestions.filtered.json
+
+# Temporary and editor-generated files
+*.orig
+*.rej
+*.tmp
+*.swp
+
+# Local archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Historical local patch and stage backups
+*.before-v*
+*.before-v1*
+*.before-v190-*
+*.before-v170-*
+*.before-stage*
+*.before-*
+
+# Generated local suggestion reports
+suggestions.md
+
+# Local emergency backup directory
+.v170_stage1_backup/
+
+# Local emergency copies
+web/app.py.broken-*
+
+# Runtime and generated reports
+reports/

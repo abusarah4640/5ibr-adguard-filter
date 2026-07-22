@@ -9,11 +9,23 @@ from pathlib import Path
 
 from scripts.database import DATABASE, FIELDNAMES, load_database
 from scripts.services.database_service import database_integrity_report
+from scripts.services.project_status_service import (
+    PROJECT_INITIALIZED,
+    PROJECT_INVALID,
+    evaluate_project_status,
+)
 
-ROOT = Path(__file__).resolve().parent.parent
-CONFIG = ROOT / "config"
-FILTERS = ROOT / "filters"
-RELEASES = ROOT / "releases"
+from scripts.runtime.paths import (
+    get_runtime_paths,
+)
+
+
+RUNTIME_PATHS = get_runtime_paths()
+
+ROOT = RUNTIME_PATHS.root
+CONFIG = RUNTIME_PATHS.config
+FILTERS = RUNTIME_PATHS.filters
+RELEASES = RUNTIME_PATHS.releases
 
 
 def _load_json(path: Path) -> dict:
@@ -94,7 +106,31 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Problems found   : {len(problems)}")
     print("------------------------------------------")
 
-    if problems:
+    lifecycle = evaluate_project_status(
+        ROOT
+    )
+
+    print(
+        "Project lifecycle :",
+        lifecycle.decision,
+    )
+
+    initialized_only = (
+        lifecycle.decision
+        == PROJECT_INITIALIZED
+        and problems
+        == ["Database has rows"]
+    )
+
+    if initialized_only:
+        print("Doctor INITIALIZED")
+        return 0
+
+    if (
+        problems
+        or lifecycle.decision
+        == PROJECT_INVALID
+    ):
         print("Doctor FAILED")
         return 1
 

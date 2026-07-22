@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 page-header">
+  <div><h1 class="mb-1">{{ title }}</h1><p class="text-muted mb-0">{{ t('operation_result_desc') }}</p></div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ t('back_to_dashboard') }}</a>
+</div>
+<section class="card mb-4" aria-labelledby="operation-summary-heading">
+  <div class="card-header d-flex justify-content-between align-items-center"><h2 class="h5 mb-0" id="operation-summary-heading">{{ t('operation_summary') }}</h2><span class="badge text-bg-{{ 'success' if code == 0 else 'danger' }}">{{ t('operation_status_success') if code == 0 else t('operation_status_failure') }}</span></div>
+  <div class="card-body"><dl class="operation-summary-grid mb-0">
+    <div><dt>{{ t('operation') }}</dt><dd>{{ t('operation_' ~ operation) }}</dd></div><div><dt>{{ t('exit_code') }}</dt><dd><code>{{ code }}</code></dd></div><div><dt>{{ t('executed_at') }}</dt><dd><time datetime="{{ executed_at }}">{{ executed_at }}</time></dd></div><div><dt>{{ t('duration') }}</dt><dd>{{ duration_ms }} {{ t('milliseconds_short') }}</dd></div>
+  </dl></div>
+</section>
+<section class="card" aria-labelledby="technical-output-heading"><div class="card-header"><h2 class="h5 mb-0" id="technical-output-heading">{{ t('technical_output') }}</h2></div><div class="card-body">{% if output %}<pre class="operation-output mb-0" tabindex="0">{{ output }}</pre>{% else %}<div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-terminal" aria-hidden="true"></i></span><h3 class="h5 text-body">{{ t('no_output_title') }}</h3><p>{{ t('no_output_desc') }}</p></div>{% endif %}</div></section>
+{% endblock %}

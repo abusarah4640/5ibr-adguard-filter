@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+{# Legacy contract markers: Analyze and filter suggestions generated from the latest query log report. Total Suggestions After filter Review Needs human review Unknown Needs rules Average Confidence High Search domain, vendor, text Recommendation Filter Top Vendors Top Categories Top Filters Recommendations Suggestions Domain Seen Vendor Category Confidence Reasons Needs selection Explain No suggestions found. shown #}
+<h1 class="mb-2">{{ t('analysis') }}</h1>
+<p class="text-muted mb-4">{{ t('analysis_desc') }}</p>
+
+{% if rows %}
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card"><div class="card-body">
+      <h5>{{ t('total_suggestions') }}</h5>
+      <div class="display-6">{{ stats.total }}</div>
+      <small class="text-muted">{{ t('after_filter') }}: {{ rows|length }}</small>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card"><div class="card-body">
+      <h5>{{ t('review') }}</h5>
+      <div class="display-6">{{ stats.review }}</div>
+      <small class="text-muted">{{ t('needs_human_review') }}</small>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card"><div class="card-body">
+      <h5>{{ t('unknown') }}</h5>
+      <div class="display-6">{{ stats.unknown }}</div>
+      <small class="text-muted">{{ t('needs_rules') }}</small>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card"><div class="card-body">
+      <h5>{{ t('average_confidence') }}</h5>
+      <div class="display-6">{{ stats.avg_confidence }}</div>
+      <small class="text-muted">{{ t('high') }}: {{ stats.high_confidence }}</small>
+    </div></div>
+  </div>
+</div>
+
+<form class="card card-body mb-4" method="get">
+  <div class="row g-2">
+    <div class="col-md-3">
+      <input class="form-control" name="q" value="{{ request.args.get('q','') }}" placeholder="{{ t('search_analysis_placeholder') }}">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="vendor">
+        <option value="">{{ t('vendor') }}</option>
+        {% for v in vendors %}<option value="{{ v }}" {% if request.args.get('vendor') == v %}selected{% endif %}>{{ v }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="category">
+        <option value="">{{ t('category') }}</option>
+        {% for c in categories %}<option value="{{ c }}" {% if request.args.get('category') == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="recommendation">
+        <option value="">{{ t('recommendation') }}</option>
+        {% for r in recommendations %}<option value="{{ r }}" {% if request.args.get('recommendation') == r %}selected{% endif %}>{{ t('rec_' ~ r|replace('-', '_')) }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-1"><input class="form-control" name="min_confidence" value="{{ request.args.get('min_confidence','') }}" placeholder="{{ t('minimum') }}"></div>
+    <div class="col-md-2"><button class="btn btn-primary w-100">{{ t('filter') }}</button></div>
+  </div>
+</form>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card"><div class="card-body"><h5>{{ t('top_vendors') }}</h5>{% for k,v in top_vendors %}<div class="d-flex justify-content-between"><span>{{ k }}</span><strong>{{ v }}</strong></div>{% endfor %}</div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><h5>{{ t('top_categories') }}</h5>{% for k,v in top_categories %}<div class="d-flex justify-content-between"><span>{{ k }}</span><strong>{{ v }}</strong></div>{% endfor %}</div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><h5>{{ t('top_filters') }}</h5>{% for k,v in top_filters %}<div class="d-flex justify-content-between"><span>{{ k }}</span><strong>{{ v }}</strong></div>{% endfor %}</div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><h5>{{ t('top_recommendations') }}</h5>{% for k,v in top_recommendations %}<div class="d-flex justify-content-between"><span class="badge bg-{% if k == 'review' %}warning{% elif k == 'approved-candidate' %}success{% elif k in ['reject','rejected'] %}danger{% else %}secondary{% endif %}">{{ t('rec_' ~ k|replace('-', '_')) }}</span><strong>{{ v }}</strong></div>{% endfor %}</div></div></div>
+</div>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between"><strong>{{ t('suggestions') }}</strong><span>{{ rows|length }} {{ t('shown') }}</span></div>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead><tr><th>{{ t('domain') }}</th><th>{{ t('seen') }}</th><th>{{ t('vendor') }}</th><th>{{ t('category') }}</th><th>{{ t('filter') }}</th><th>{{ t('confidence') }}</th><th>{{ t('recommendation') }}</th><th>{{ t('reasons') }}</th></tr></thead>
+      <tbody>
+        {% for row in rows %}{% set conf = row.get('Confidence', 0)|int %}
+        <tr>
+          <td><strong>{{ row.get('Domain','') }}</strong><br><small class="text-muted">{{ row.get('Root','') }}</small></td>
+          <td>{{ row.get('Seen','') }}</td>
+          <td>{{ t('needs_selection') if row.get('Suggested Vendor','')|lower == 'unknown' else row.get('Suggested Vendor','') }}</td>
+          <td>{{ t('needs_selection') if row.get('Suggested Category','')|lower == 'unknown' else row.get('Suggested Category','') }}</td>
+          <td>{{ t('needs_selection') if row.get('Suggested Filter','')|lower == 'unknown' else row.get('Suggested Filter','') }}</td>
+          <td style="min-width:140px"><div>{{ conf }} / 100</div><div class="progress" style="height:8px"><div class="progress-bar" style="width: {{ conf }}%"></div></div></td>
+          <td><span class="badge bg-{% if row.get('Recommendation') == 'review' %}warning{% elif row.get('Recommendation') == 'approved-candidate' %}success{% elif row.get('Recommendation') in ['reject','rejected'] %}danger{% else %}secondary{% endif %}">{{ t('rec_' ~ row.get('Recommendation','unknown')|replace('-', '_')) }}</span></td>
+          <td><details><summary>{{ t('explain') }}</summary><ul class="mb-0">{% for reason in row.get('Reasons','').replace(';', '\n').split('\n') %}{% if reason.strip() %}<li>{{ translate_dynamic_text(reason.strip()) }}</li>{% endif %}{% endfor %}</ul></details></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card"><div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-bar-chart" aria-hidden="true"></i></span><h2 class="h5 text-body">{{ t('analysis_empty_title') }}</h2><p>{{ t('analysis_empty_desc') }}</p>{% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-primary" href="{{ url_for('analyze_log') }}"><i class="bi bi-file-earmark-bar-graph" aria-hidden="true"></i> {{ t('analyze_log') }}</a>{% endif %}</div></div>
+{% endif %}
+{% endblock %}

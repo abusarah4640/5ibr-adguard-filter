@@ -142,4 +142,48 @@ Stabilization documents:
 - `docs/adr/ADR-004-metadata-preservation.md`
 - `docs/releases/v1.0.0-beta.md`
 
-Current stabilization target: `v1.0.0-beta`.
+Current stabilization target: `2.2.0rc1` (`NOT READY`; maintainer self-review only).
+
+## Web Admin UI
+
+The toolkit includes an authenticated Flask administration UI.
+
+For local development only:
+
+```bash
+python -m pip install --editable .
+fivebr-web
+```
+
+Open `http://127.0.0.1:8089`. The development entry point is loopback-only and
+refuses to run when `FIVEBR_ENV=production`.
+
+For production, run `web.app:app` with a production WSGI server bound to
+loopback behind a TLS reverse proxy. See `docs/web-ui.md` for the required
+security settings.
+
+<!-- fivebr-runtime-release -->
+
+## 1.9.0 Runtime Projects
+
+Install the final package and create a safe runtime project:
+
+    fivebr version
+    fivebr init /path/to/project
+    export FIVEBR_HOME=/path/to/project
+    fivebr project-status
+    fivebr doctor
+    fivebr validate
+    fivebr build
+
+Project lifecycle states:
+
+    PROJECT_INITIALIZED
+    PROJECT_OPERATIONAL
+    PROJECT_INVALID
+
+Mutable data is stored inside `FIVEBR_HOME`.
+
+The installed package does not contain production policies, audit logs, reports, runtime backups, suggestion decisions, or production database rows.
+
+See `RELEASE_NOTES.md` for the current 2.2.0rc1 candidate notes. Historical 1.9.0 notes are archived at `docs/RELEASE_NOTES_1.9.0.md`.

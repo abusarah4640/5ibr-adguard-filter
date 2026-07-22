@@ -1,0 +1,7 @@
+@keyframes shimmer{to{background-position-x:-200%}}
+@keyframes page-enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes count-enter{from{opacity:.25;transform:translateY(.3rem)}to{opacity:1;transform:none}}
+.app-main{animation:page-enter .28s ease-out}.metric-value,[data-analytics-value]{animation:count-enter .45s ease-out}
+.card,.btn{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.card:hover{border-color:color-mix(in srgb,var(--fivebr-primary) 24%,var(--fivebr-border))}.btn:hover:not(:disabled){transform:translateY(-1px)}
+.skeleton{min-height:1rem;border-radius:.4rem;background:linear-gradient(100deg,rgb(148 163 184 / .12) 30%,rgb(148 163 184 / .25) 50%,rgb(148 163 184 / .12) 70%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

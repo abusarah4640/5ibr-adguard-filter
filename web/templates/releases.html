@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3"><h1>{{ t('releases') }}</h1>{% if current_user.is_authenticated and current_user.role == 'admin' %}<form method="post" action="{{ url_for('action', action='build') }}"><button class="btn btn-warning">{{ t('build_filters') }}</button></form>{% endif %}</div>
+<div class="card"><div class="table-responsive"><table class="table table-sm align-middle mb-0">
+<thead><tr><th>{{ t('file') }}</th><th>{{ t('size') }}</th><th>{{ t('last_modified') }}</th><th>{{ t('action') }}</th></tr></thead>
+<tbody>
+{% for file in files %}
+  <tr><td><code>{{ file.name }}</code></td><td>{{ file.size }}</td><td>{{ file.modified }}</td><td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('download_release', filename=file.name) }}">{{ t('download') }}</a></td></tr>
+{% else %}
+  <tr><td colspan="4"><div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-box-seam"></i></span><h2 class="h5 text-body">{{ t('no_releases') }}</h2><p>{{ t('releases_empty_desc') }}</p>{% if current_user.is_authenticated and current_user.role == 'admin' %}<form method="post" action="{{ url_for('action', action='build') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-primary"><i class="bi bi-hammer"></i> {{ t('build_filters') }}</button></form>{% endif %}</div></td></tr>
+{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
