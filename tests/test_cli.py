@@ -7,19 +7,31 @@ def test_command_registry_contains_supported_commands():
 
     assert set(fivebr.COMMANDS) == {
         "add",
+        "analyze",
+        "analyze-log",
+        "confidence-impact",
+        "conflict-impact",
         "build",
         "remove",
         "review",
+        "rule-check",
         "list",
         "doctor",
         "normalize",
         "export",
         "import",
+        "knowledge-check",
+        "intelligence-check",
+        "intelligence-diagnostics",
+        "intelligence-report",
         "report",
+        "project-status",
         "search",
         "stats",
         "update",
         "validate",
+                                       "version",
+                                       "init",
     }
 
 

@@ -6,7 +6,4 @@
 !
 
 ! ===== GAMING =====
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||telemetry.riotgames.com^
+telemetry.riotgames.com

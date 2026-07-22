@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+{% set item = suggestion if suggestion else row %}
+{% set vendor_value = normalize_unknown(item.get('Suggested Vendor') or item.get('Vendor'), t('needs_selection')) %}
+{% set category_value = normalize_unknown(item.get('Suggested Category') or item.get('Category'), t('needs_selection')) %}
+{% set filter_value = normalize_unknown(item.get('Suggested Filter') or item.get('Filter'), t('needs_selection')) %}
+{% set confidence_value = item.get('Confidence', 0) %}
+
+<h1 class="mb-4">{{ item.get('Domain', '') }}</h1>
+
+<div class="alert alert-warning">
+  <strong>{{ t('suggestion_guidance') }}</strong>{# Suggestion Guidance #}<br>
+  {{ t('vendor') }}: {{ vendor_value }}<br>
+  {{ t('category') }}: {{ category_value }}<br>
+  {{ t('filter') }}: {{ filter_value }}
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h5>{{ t('confidence') }}</h5>{# Confidence #}
+    <div class="mb-2">{{ confidence_value }} / 100</div>
+    <div class="progress mb-2">
+      <div class="progress-bar" style="width: {{ confidence_value }}%">
+        {{ confidence_value }}%
+      </div>
+    </div>
+    <span class="badge bg-{{ recommendation_badge(item.get('Recommendation')) }}">
+      {{ translate_recommendation(item.get('Recommendation', 'unknown')) }}
+    </span>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h5>{{ t('analyzer_explanation') }}</h5>{# Analyzer Explanation #}
+    <ul>
+      {% for reason in explain_suggestion(item) %}
+      <li>{{ translate_dynamic_text(reason) }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">{{ t('domain') }}</label>{# Domain #}
+    <input class="form-control" name="domain" value="{{ item.get('Domain', '') }}" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ t('vendor') }}</label>{# Vendor #}
+    <select class="form-select" name="vendor">
+      <option value="">{{ vendor_value }}</option>
+      {% for v in vendors %}
+      <option value="{{ v }}">{{ v }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ t('category') }}</label>{# Category #}
+    <select class="form-select" name="category">
+      <option value="">{{ category_value }}</option>
+      {% for c in categories %}
+      <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">{{ t('filter') }}</label>{# Filter #}
+    <select class="form-select" name="filter">
+      <option value="">{{ filter_value }}</option>
+      {% for f in filters %}
+      <option value="{{ f }}">{{ f }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <input type="hidden" name="confidence" value="{{ confidence_value }}">
+
+  <button class="btn btn-success">{{ t('approve') }}</button>{# Approve #}
+  <a class="btn btn-secondary" href="{{ url_for('suggestions') }}">{{ t('cancel') }}</a>{# Cancel #}
+</form>
+{% endblock %}

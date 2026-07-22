@@ -143,3 +143,46 @@ Stabilization documents:
 - `docs/releases/v1.0.0-beta.md`
 
 Current stabilization target: `v1.0.0-beta`.
+
+## Web Admin UI
+
+The toolkit also includes a lightweight Flask Web UI for trusted admin use.
+
+```bash
+pip install -e .
+fivebr-web
+```
+
+Open:
+
+```text
+http://SERVER-IP:8089
+```
+
+For more details, see `docs/web-ui.md`.
+
+<!-- fivebr-runtime-release -->
+
+## 1.9.0 Runtime Projects
+
+Install the final package and create a safe runtime project:
+
+    fivebr version
+    fivebr init /path/to/project
+    export FIVEBR_HOME=/path/to/project
+    fivebr project-status
+    fivebr doctor
+    fivebr validate
+    fivebr build
+
+Project lifecycle states:
+
+    PROJECT_INITIALIZED
+    PROJECT_OPERATIONAL
+    PROJECT_INVALID
+
+Mutable data is stored inside `FIVEBR_HOME`.
+
+The installed package does not contain production policies, audit logs, reports, runtime backups, suggestion decisions, or production database rows.
+
+See `RELEASE_NOTES.md` for the complete 1.9.0 final release notes.

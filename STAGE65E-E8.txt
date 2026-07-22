@@ -1,0 +1,4 @@
+Stage 65E-E8 — Audit & Decision Archive
+
+Append-only readiness decision and manual-review archive.
+No enforcement activation capability is included.

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('settings') }}</h1>
+<div class="row g-4">
+<div class="col-lg-7"><form method="post" class="card"><div class="card-body">
+  <h2 class="h5">{{ t('profile') }}</h2>
+  <div class="mb-3"><label class="form-label">{{ t('display_name') }}</label><input class="form-control" name="display_name" value="{{ current_user.display_name }}"></div>
+  <div class="mb-3"><label class="form-label">{{ t('email') }}</label><input class="form-control" type="email" name="email" value="{{ current_user.email }}"></div>
+  <div class="mb-3"><label class="form-label">{{ t('language') }}</label><select class="form-select" name="language"><option value="en" {% if current_user.language == 'en' %}selected{% endif %}>{{ t('english') }}</option><option value="ar" {% if current_user.language == 'ar' %}selected{% endif %}>{{ t('arabic') }}</option></select></div>
+  <div class="mb-3"><label class="form-label">{{ t('theme') }}</label><select class="form-select" name="theme">{% for value in ('light', 'dark', 'auto') %}<option value="{{ value }}" {% if current_user.theme == value %}selected{% endif %}>{{ t('theme_' ~ value) }}</option>{% endfor %}</select></div>
+  <div class="mb-3"><label class="form-label">{{ t('timezone') }}</label><input class="form-control" name="timezone" value="{{ current_user.timezone }}" list="timezones"><datalist id="timezones"><option value="UTC"><option value="Asia/Riyadh"><option value="Europe/London"><option value="America/New_York"></datalist></div>
+  <div class="mb-3"><label class="form-label">{{ t('date_format') }}</label><select class="form-select" name="date_format">{% for value in ('yyyy-mm-dd', 'dd/mm/yyyy', 'mm/dd/yyyy') %}<option value="{{ value }}" {% if current_user.date_format == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+  <button class="btn btn-primary">{{ t('save_settings') }}</button>
+</div></form></div>
+<div class="col-lg-5"><form method="post" action="{{ url_for('change_password') }}" class="card"><div class="card-body">
+  <h2 class="h5">{{ t('change_password') }}</h2>
+  <div class="mb-3"><label class="form-label">{{ t('current_password') }}</label><input class="form-control" type="password" name="current_password" autocomplete="current-password" required></div>
+  <div class="mb-3"><label class="form-label">{{ t('new_password') }}</label><input class="form-control" type="password" name="new_password" minlength="12" autocomplete="new-password" required></div>
+  <div class="mb-3"><label class="form-label">{{ t('confirm_password') }}</label><input class="form-control" type="password" name="confirm_password" minlength="12" autocomplete="new-password" required></div>
+  <button class="btn btn-outline-primary">{{ t('change_password') }}</button>
+</div></form></div>
+</div>
+{% endblock %}

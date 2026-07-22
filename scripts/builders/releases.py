@@ -6,12 +6,11 @@ Generate release files from config/releases.json
 
 from pathlib import Path
 import json
+from scripts.runtime.paths import (
+    get_runtime_paths,
+)
 
-ROOT = Path(__file__).resolve().parent.parent.parent
 
-CONFIG_FILE = ROOT / "config" / "releases.json"
-FILTERS_DIR = ROOT / "filters"
-RELEASES_DIR = ROOT / "releases"
 
 HEADER = """! Title: {title}
 ! Description: {description}
@@ -22,11 +21,35 @@ HEADER = """! Title: {title}
 """
 
 
+
+def get_filters_dir() -> Path:
+    return get_runtime_paths().filters
+
+
+def get_releases_dir() -> Path:
+    return get_runtime_paths().releases
+
+
+def get_releases_config_path() -> Path:
+    return (
+        get_runtime_paths().config
+        / "releases.json"
+    )
+
 def build_releases():
 
-    RELEASES_DIR.mkdir(exist_ok=True)
+    releases_dir = get_releases_dir()
+    filters_dir = get_filters_dir()
+    config_file = (
+        get_releases_config_path()
+    )
 
-    with open(CONFIG_FILE, encoding="utf-8") as f:
+    releases_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    with config_file.open(encoding="utf-8") as f:
         releases = json.load(f)
 
     for release_name, release in releases.items():
@@ -42,7 +65,7 @@ def build_releases():
 
         for filter_name in release["filters"]:
 
-            filter_file = FILTERS_DIR / f"{filter_name}.txt"
+            filter_file = filters_dir / f"{filter_name}.txt"
 
             if not filter_file.exists():
                 raise FileNotFoundError(
@@ -56,7 +79,7 @@ def build_releases():
 
             output.append(filter_file.read_text(encoding="utf-8"))
 
-        (RELEASES_DIR / f"{release_name}.txt").write_text(
+        (releases_dir / f"{release_name}.txt").write_text(
             "\n".join(output),
             encoding="utf-8"
         )

@@ -1,5 +1,2 @@
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||connect.facebook.net^
-||graph.facebook.com^
+connect.facebook.net
+graph.facebook.com

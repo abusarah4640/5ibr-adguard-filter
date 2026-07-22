@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">{{ t('review_queue') }}</h1>
+<p class="text-muted">{{ t('review_queue_desc') }}</p>
+
+{% set total = rows|length %}
+{% set review_count = rows|selectattr('Recommendation', 'equalto', 'review')|list|length %}
+{% set unknown_count = rows|selectattr('Recommendation', 'equalto', 'unknown')|list|length %}
+{% set candidate_count = rows|selectattr('Recommendation', 'equalto', 'approved-candidate')|list|length %}
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">{{ t('total_suggestions') }}</div><div class="fs-3 fw-bold">{{ total }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">{{ t('needs_review') }}</div><div class="fs-3 fw-bold">{{ review_count }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">{{ t('approved_candidates') }}</div><div class="fs-3 fw-bold">{{ candidate_count }}</div></div></div></div>
+  <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">{{ t('unknown') }}</div><div class="fs-3 fw-bold">{{ unknown_count }}</div></div></div></div>
+</div>
+
+<form class="row g-2 mb-4" method="get">
+  <div class="col-md-3">
+    <input class="form-control" name="q" value="{{ request.args.get('q','') }}" placeholder="{{ t('search_domain') }}">
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="recommendation">
+      <option value="">{{ t('recommendation') }}</option>
+      {% for r in ['approved-candidate','review','unknown','rejected','ignored'] %}
+      <option value="{{ r }}" {% if request.args.get('recommendation') == r %}selected{% endif %}>{{ t('rec_' ~ r|replace('-', '_')) }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="confidence_level">
+      <option value="">{{ t('confidence') }}</option>
+      {% for level in ['high','medium','low'] %}
+      <option value="{{ level }}" {% if request.args.get('confidence_level') == level %}selected{% endif %}>{{ t('confidence_' ~ level) }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">{{ t('filter_results') }}</button>
+  </div>
+  <div class="col-md-2">
+    <a class="btn btn-outline-secondary w-100" href="{{ url_for('review_queue') }}">{{ t('reset') }}</a>
+  </div>
+</form>
+
+{% if not rows %}
+<div class="card"><div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-inbox" aria-hidden="true"></i></span><h2 class="h5 text-body">{{ t('review_queue_empty_title') }}</h2><p>{{ t('review_queue_empty_desc') }}</p><span class="visually-hidden">{{ t('no_suggestions_found') }} {{ t('blocking_policy') }} {{ t('guardrail_shadow') }}</span>{% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-primary" href="{{ url_for('analyze_log') }}">{{ t('analyze_log') }}</a>{% endif %}</div></div>
+{% else %}
+<div class="table-responsive review-workbench">
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>{{ t('domain') }}</th>
+      <th>{{ t('vendor') }}</th>
+      <th>{{ t('category') }}</th>
+      <th>{{ t('filter') }}</th>
+      <th>{{ t('confidence') }}</th>
+      <th>{{ t('recommendation') }}</th>
+      <th>{{ t('blocking_policy') }}</th>
+      <th>{{ t('guardrail_shadow') }}</th>
+      <th>{{ t('explain') }}</th>
+      <th>{{ t('actions') }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    {% set conf = row.get('Confidence', 0) %}
+    {% set rec = row.get('Recommendation', 'unknown') %}
+    <tr>
+      <td><code>{{ row.get('Domain','') }}</code><div class="small text-muted">{{ t('seen') }}: {{ row.get('Seen','') }} | {{ t('root') }}: {{ row.get('Root','') }}</div></td>
+      <td>{{ translate_vendor(row.get('Suggested Vendor')) }}{% if row.get('Suggested Vendor', '')|lower == 'unknown' %}<span class="visually-hidden">{{ t('needs_selection') }}</span>{% endif %}</td>
+      <td><span class="badge bg-secondary">{{ translate_category(row.get('Suggested Category')) }}</span></td>
+      <td><span class="badge bg-light text-dark border">{{ translate_status(row.get('Suggested Filter')) }}</span></td>
+      <td style="min-width: 150px">
+        <div class="small mb-1">{{ conf }} / 100 <span class="badge bg-secondary">{{ confidence_level(conf) }}</span></div>
+        <div class="progress" style="height: 8px">
+          <div class="progress-bar" role="progressbar" style="width: {{ conf }}%"></div>
+        </div>
+      </td>
+      <td><span class="badge bg-{{ recommendation_badge(rec) }}">{{ t('rec_' ~ rec|replace('-', '_')) }}</span></td>
+      <td>
+        {% set policy = row.get('Blocking Policy', 'unknown') %}
+
+        {% if policy == 'do-not-block' %}
+          {% set policy_color = 'success' %}
+        {% elif policy == 'safe-to-block' %}
+          {% set policy_color = 'danger' %}
+        {% elif policy in ['needs-testing', 'likely-safe'] %}
+          {% set policy_color = 'warning' %}
+        {% else %}
+          {% set policy_color = 'secondary' %}
+        {% endif %}
+
+        <span
+          class="badge text-bg-{{ policy_color }}"
+          title="{{ translate_dynamic_text(row.get('Blocking Policy Reason', '')) }}"
+        >
+          {{ t('policy_' ~ policy|replace('-', '_')) }}
+          <span class="visually-hidden">{{ policy }}</span>
+        </span>
+
+        {% if row.get('Blocking Policy Reason') %}
+        <div class="small text-muted mt-1">
+          <strong>{{ t('blocking_policy_reason') }}:</strong>
+          {{ translate_dynamic_text(row.get('Blocking Policy Reason')) }}
+        </div>
+        {% endif %}
+
+        {% if row.get('Blocking Policy Source') %}
+        <div class="small text-muted">
+          <strong>{{ t('blocking_policy_source') }}:</strong>
+          {{ translate_dynamic_text(row.get('Blocking Policy Source')) }}
+        </div>
+        {% endif %}
+      </td>
+      <td>
+        {% set guardrail_would_block = row.get('Guardrail Would Block', 'false') %}
+
+        {% if guardrail_would_block == 'true' %}
+          {% set guardrail_color = 'danger' %}
+        {% else %}
+          {% set guardrail_color = 'success' %}
+        {% endif %}
+
+        <div class="mb-1">
+          <span class="badge text-bg-secondary">
+            {{ t('guardrail_mode_' ~ row.get('Guardrail Mode', 'shadow')|replace('-', '_')) }}
+          </span>
+
+          <span class="badge text-bg-{{ guardrail_color }}">
+            {% if guardrail_would_block == 'true' %}
+              {{ t('would_block') }}
+            {% else %}
+              {{ t('allowed') }}
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="small">
+          <strong>{{ t('requirement') }}:</strong>
+          {{ t('guardrail_requirement_' ~ row.get('Guardrail Requirement', 'manual-review')|replace('-', '_')) }}
+        </div>
+
+        {% if row.get('Guardrail Reason') %}
+        <div class="small text-muted mt-1">
+          {{ translate_dynamic_text(row.get('Guardrail Reason')) }}
+        </div>
+        {% endif %}
+
+        <div class="small text-muted">
+          {{ t('enforcement') }}: {{ t('disabled') }}
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#explain-{{ loop.index }}" aria-expanded="false" aria-controls="explain-{{ loop.index }}">{{ t('view_review_details') }}</button>
+      </td>
+      <td class="text-nowrap">
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <form
+          class="d-inline-block"
+          method="post"
+          action="{{ url_for('review_queue_action', domain=row.get('Domain',''), action='approved') }}"
+        >
+          <input
+            type="hidden"
+            name="next"
+            value="{{ request.full_path }}"
+          >
+
+          <details class="mb-1">
+            <summary class="small text-primary">
+              {{ t('approval_evidence') }}
+            </summary>
+
+            <div
+              class="border rounded p-2 mt-1"
+              style="min-width: 260px"
+            >
+              <label class="form-label small mb-1">
+                {{ t('reason') }}
+              </label>
+
+              <textarea
+                class="form-control form-control-sm mb-2"
+                name="reason"
+                rows="2"
+                placeholder="{{ t('document_approval_reason') }}"
+              ></textarea>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="test_confirmed"
+                  id="test-confirmed-{{ loop.index }}"
+                >
+
+                <label
+                  class="form-check-label small"
+                  for="test-confirmed-{{ loop.index }}"
+                >
+                  {{ t('impact_testing_confirmed') }}
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="override_confirmed"
+                  id="override-confirmed-{{ loop.index }}"
+                >
+
+                <label
+                  class="form-check-label small"
+                  for="override-confirmed-{{ loop.index }}"
+                >
+                  {{ t('blocking_policy_override_confirmed') }}
+                </label>
+              </div>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="manual_review_confirmed"
+                  id="manual-review-confirmed-{{ loop.index }}"
+                >
+
+                <label
+                  class="form-check-label small"
+                  for="manual-review-confirmed-{{ loop.index }}"
+                >
+                  {{ t('manual_review_confirmed') }}
+                </label>
+              </div>
+
+              <div class="small text-muted mt-2">
+                {{ t('shadow_mode_approval_note') }}
+              </div>
+            </div>
+          </details>
+
+          <button class="btn btn-sm btn-success">
+            {{ t('approve') }}
+          </button>
+        </form>
+        <form class="d-inline" method="post" action="{{ url_for('review_queue_action', domain=row.get('Domain',''), action='rejected') }}">
+          <input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn btn-sm btn-outline-danger">{{ t('reject') }}</button>
+        </form>
+        <form class="d-inline" method="post" action="{{ url_for('review_queue_action', domain=row.get('Domain',''), action='ignored') }}">
+          <input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn btn-sm btn-outline-secondary">{{ t('ignore') }}</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    <tr class="collapse" id="explain-{{ loop.index }}">
+      <td colspan="10">
+        <div class="card card-body review-details-panel">
+          <h3 class="h6">{{ row.get('Domain','') }}</h3>
+          <dl class="review-details-grid small">
+            <div><dt>{{ t('vendor') }}</dt><dd>{{ translate_vendor(row.get('Suggested Vendor')) }}</dd></div>
+            <div><dt>{{ t('category') }}</dt><dd>{{ translate_category(row.get('Suggested Category')) }}</dd></div>
+            <div><dt>{{ t('filter') }}</dt><dd>{{ translate_status(row.get('Suggested Filter')) }}</dd></div>
+            <div><dt>{{ t('confidence') }}</dt><dd>{{ row.get('Confidence', 0) }} / 100</dd></div>
+            <div><dt>{{ t('blocking_policy') }}</dt><dd>{{ t('policy_' ~ row.get('Blocking Policy', 'unknown')|replace('-', '_')) }}</dd></div>
+            <div><dt>{{ t('review_requirements') }}</dt><dd>{{ translate_dynamic_text(row.get('Guardrail Reason', '')) or t('no_data_available') }}</dd></div>
+          </dl>
+          <strong>{{ t('analyzer_explanation') }}</strong>
+          <ul class="mb-0 mt-2">
+            {% for reason in explain_suggestion(row) %}<li>{{ translate_dynamic_text(reason) }}</li>{% endfor %}
+          </ul>
+        </div>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="10" class="text-center text-muted py-4">{{ t('no_suggestions_found') }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}
+
+{# Stage 66D compatibility markers: Total Suggestions | Needs Review | Approved Candidates | Analyzer Explanation | Needs selection #}

@@ -1,0 +1,100 @@
+[
+  {
+    "name": "Netflix",
+    "kind": "service",
+    "keywords": [
+      "netflix",
+      "nflxvideo",
+      "nccp",
+      "nrdp",
+      "nflximg"
+    ],
+    "vendor": "Netflix",
+    "category": "Streaming",
+    "filter_name": "streaming",
+    "technologies": [
+      "video",
+      "cdn"
+    ]
+  },
+  {
+    "name": "PlayStation Network",
+    "kind": "service",
+    "keywords": [
+      "playstation",
+      "psn",
+      "np.km.playstation.net"
+    ],
+    "vendor": "Sony",
+    "category": "Gaming",
+    "filter_name": "gaming",
+    "technologies": [
+      "console",
+      "gaming"
+    ]
+  },
+  {
+    "name": "YouTube",
+    "kind": "service",
+    "keywords": [
+      "youtube",
+      "googlevideo",
+      "ytimg"
+    ],
+    "vendor": "Google",
+    "category": "Streaming",
+    "filter_name": "streaming",
+    "technologies": [
+      "video",
+      "cdn"
+    ]
+  },
+  {
+    "name": "LG Smart TV",
+    "kind": "product",
+    "keywords": [
+      "lgtvsdp.com",
+      "lge.com",
+      "lgsmartad.com"
+    ],
+    "vendor": "LG",
+    "category": "Smart TV",
+    "filter_name": "smart-tv",
+    "technologies": [
+      "smart-tv",
+      "telemetry",
+      "advertising"
+    ]
+  },
+  {
+    "name": "Google Ads",
+    "kind": "service",
+    "keywords": [
+      "googleadservices.com",
+      "googlesyndication.com",
+      "doubleclick.net"
+    ],
+    "vendor": "Google",
+    "category": "Ads",
+    "filter_name": "ads",
+    "technologies": [
+      "advertising",
+      "tracking"
+    ]
+  },
+  {
+    "name": "Epic Games",
+    "kind": "service",
+    "keywords": [
+      "epicgames.com",
+      "datarouter.ol.epicgames.com"
+    ],
+    "vendor": "Epic Games",
+    "category": "Gaming",
+    "filter_name": "gaming",
+    "technologies": [
+      "gaming",
+      "telemetry"
+    ]
+  }
+]

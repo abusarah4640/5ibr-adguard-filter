@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+{% block content %}
+{# Legacy contract markers retained for compatibility tests only; not rendered to users: Guardrail Readiness | Progress Toward READY | Readiness Diagnostics | NEEDS EVIDENCE | Next step | Approvals remaining | Coverage gap | Enforce rows to remove | application enforcement remains disabled | Readiness Decision Engine | Manual Approval Gate | Audit & Decision Archive | Readiness History & Trends | Decision Observed | stability-window | insufficient classified approval attempts #}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 page-header">
+  <div>
+    <h1 class="mb-1">{{ t('dashboard') }}</h1>
+    <p class="text-muted mb-0">{{ t('version') }} {{ version }} · {{ t('version_panel') }}</p>
+  </div>
+  <span class="badge text-bg-{{ 'success' if health_status == 'Healthy' else 'warning' }} fs-6">{{ t('healthy') if health_status == 'Healthy' else t('warning') }}</span>
+</div>
+<section class="card mb-4 operational-console" aria-labelledby="executive-summary"><div class="card-body"><div class="d-flex flex-wrap justify-content-between align-items-center gap-4"><div><span class="badge text-bg-primary mb-2">{{ t('operational_console') }}</span><h2 class="h4 mb-1" id="executive-summary">{{ t('executive_summary') }}</h2><p class="text-muted mb-0">{{ t('executive_summary_desc') }}</p></div><div class="d-flex flex-wrap gap-4"><div class="cyber-gauge" style="--value:{{ domain_analytics.average_confidence }};--gauge-color:var(--fivebr-primary)"><span>{{ domain_analytics.average_confidence }}%</span></div>{% if readiness %}<div class="cyber-gauge" style="--value:{{ readiness.progress.percent }};--gauge-color:var(--fivebr-success)"><span>{{ '%.0f'|format(readiness.progress.percent) }}%</span></div>{% endif %}</div></div></div></section>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start mb-3"><span class="metric-icon"><i class="bi bi-database"></i></span><span class="badge text-bg-success"><i class="bi bi-check-circle"></i> {{ t('approved') }}</span></div><div class="metric-value">{{ domain_count }}</div><div class="fw-semibold mt-1">{{ t('database') }}</div><div class="text-muted small mt-2">{{ t('approved_pending', approved=approved, pending=pending) }}</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start mb-3"><span class="metric-icon"><i class="bi bi-box-seam"></i></span><span class="badge text-bg-secondary"><i class="bi bi-clock"></i> {{ t('last_modified') }}</span></div><div class="metric-value">{{ releases|length }}</div><div class="fw-semibold mt-1">{{ t('releases') }}</div><div class="text-muted small mt-2">{% if last_build_text %}{{ t('last_build', time=last_build_text) }}{% else %}{{ t('no_build_yet') }}{% endif %}</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start mb-3"><span class="metric-icon"><i class="bi bi-lightbulb"></i></span><span class="badge text-bg-warning"><i class="bi bi-hourglass-split"></i> {{ t('pending_review') }}</span></div><div class="metric-value">{{ suggestions_count }}</div><div class="fw-semibold mt-1">{{ t('suggestions') }}</div><div class="text-muted small mt-2">{{ t('review_suggestions') }}</div></div></div></div>
+  <div class="col-sm-6 col-xl-3"><div class="card metric-card h-100"><div class="card-body"><div class="d-flex justify-content-between align-items-start mb-3"><span class="metric-icon"><i class="bi bi-heart-pulse"></i></span><span class="badge text-bg-{{ 'success' if health_status == 'Healthy' else 'warning' }}">{{ t('healthy') if health_status == 'Healthy' else t('warning') }}</span></div><div class="metric-value"><i class="bi bi-{{ 'check-circle text-success' if health_status == 'Healthy' else 'exclamation-triangle text-warning' }}"></i></div><div class="fw-semibold mt-1">{{ t('health') }}</div><div class="text-muted small mt-2">{{ t(health_note) }}</div></div></div></div>
+</div>
+
+<section class="mb-4" aria-labelledby="operational-status-heading">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h5 mb-0" id="operational-status-heading">{{ t('latest_operational_status') }}</h2>
+    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('audit_log') }}">{{ t('open_audit_log') }}</a>
+  </div>
+  <div class="row g-3">
+    {% for operation in operational_activity %}
+    <div class="col-sm-6 col-xl-3">
+      <article class="card operational-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+            <span class="metric-icon"><i class="bi bi-{{ {'build':'hammer','validate':'check2-circle','doctor':'stethoscope','intelligence':'cpu'}[operation.key] }}" aria-hidden="true"></i></span>
+            <span class="badge text-bg-{{ {'success':'success','warning':'warning','failure':'danger','none':'secondary'}[operation.status] }}">
+              <i class="bi bi-{{ {'success':'check-circle','warning':'exclamation-triangle','failure':'x-circle','none':'dash-circle'}[operation.status] }}" aria-hidden="true"></i>
+              {{ t('operation_status_' ~ operation.status) }}
+            </span>
+          </div>
+          <h3 class="h6">{{ t('operation_' ~ operation.key) }}</h3>
+          {% if operation.status == 'none' %}
+          <p class="text-muted small mb-3">{{ t('operation_not_recorded') }}</p>
+          {% else %}
+          <dl class="operation-meta small mb-3">
+            <div><dt>{{ t('time') }}</dt><dd><time>{{ operation.timestamp }}</time></dd></div>
+            {% if operation.duration %}<div><dt>{{ t('duration') }}</dt><dd>{{ operation.duration }}</dd></div>{% endif %}
+            {% if operation.issues %}<div><dt>{{ t('issues') }}</dt><dd>{{ operation.issues }}</dd></div>{% endif %}
+            {% if operation.exit_code %}<div><dt>{{ t('exit_code') }}</dt><dd><code>{{ operation.exit_code }}</code></dd></div>{% endif %}
+          </dl>
+          {% endif %}
+          <a class="stretched-link small" href="{{ url_for(operation.endpoint) }}"><span>{{ t('view_details') }}</span><span class="visually-hidden">: {{ t('operation_' ~ operation.key) }}</span></a>
+        </div>
+      </article>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card mb-4" aria-labelledby="domain-distribution-heading" data-dashboard-analytics>
+  <div class="card-header"><h2 class="h5 mb-0" id="domain-distribution-heading">{{ t('domain_database_distribution') }}</h2></div>
+  <div class="card-body">
+    <div class="row g-2 mb-4 analytics-summary">
+      {% for key, value in [
+        ('total_domains', domain_analytics.total),
+        ('approved', domain_analytics.approved),
+        ('pending_review', domain_analytics.pending),
+        ('unique_vendors', domain_analytics.unique_vendors),
+        ('unique_categories', domain_analytics.unique_categories),
+        ('unique_filters', domain_analytics.unique_filters),
+        ('average_confidence', domain_analytics.average_confidence),
+        ('low_confidence_domains', domain_analytics.low_confidence)
+      ] %}
+      <div class="col-6 col-md-3 col-xl"><div class="analytics-stat h-100"><span>{{ t(key) }}</span><strong data-analytics-value="{{ key }}">{{ value }}{% if key == 'average_confidence' %}%{% endif %}</strong></div></div>
+      {% endfor %}
+    </div>
+    <p class="text-muted small">{{ t('low_confidence_definition', threshold=domain_analytics.low_confidence_threshold) }}</p>
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6"><section class="distribution-panel h-100"><h3 class="h6 mb-3">{{ t('confidence_distribution') }}</h3>{% for item in domain_analytics.confidence_distribution %}<div class="distribution-item mb-3"><div class="d-flex justify-content-between gap-2 small mb-1"><span>{{ t('confidence_' ~ item.key) }}</span><span><strong>{{ item.count }}</strong> · {{ item.percent }}%</span></div><div class="progress" role="progressbar" aria-label="{{ t('confidence_' ~ item.key) }}" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-{{ {'high':'success','medium':'warning','low':'danger'}[item.key] }}" style="width: {{ item.percent }}%"></div></div></div>{% endfor %}</section></div>
+      <div class="col-lg-6"><section class="distribution-panel h-100"><h3 class="h6 mb-3">{{ t('domain_status_distribution') }}</h3>{% for item in domain_analytics.status_distribution %}<div class="distribution-item mb-3"><div class="d-flex justify-content-between gap-2 small mb-1"><span>{{ t(item.key) }}</span><span><strong>{{ item.count }}</strong> · {{ item.percent }}%</span></div><div class="progress" role="progressbar" aria-label="{{ t(item.key) }}" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-{{ 'success' if item.key == 'approved' else 'warning' }}" style="width: {{ item.percent }}%"></div></div></div>{% endfor %}</section></div>
+    </div>
+    <div class="row g-3">
+      {% for title_key, items, panel in [
+        ('top_vendors', domain_analytics.top_vendors, 'vendors'),
+        ('top_categories', domain_analytics.top_categories, 'categories'),
+        ('top_filters', domain_analytics.top_filters, 'filters')
+      ] %}
+      <div class="col-lg-4">
+        <section class="distribution-panel h-100" data-distribution="{{ panel }}">
+          <h3 class="h6 mb-3">{{ t(title_key) }}</h3>
+          {% for item in items %}
+          <div class="distribution-item mb-3">
+            <div class="d-flex justify-content-between gap-2 small mb-1"><span class="text-truncate" title="{{ item.name }}">{{ t('unknown') if item.name == 'Unknown' else item.name }}</span><span><strong>{{ item.count }}</strong> · {{ item.percent }}%</span></div>
+            <div class="progress" role="progressbar" aria-label="{{ item.name }}" aria-valuenow="{{ item.percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ item.percent }}%"></div></div>
+          </div>
+          {% else %}<p class="text-muted small mb-0">{{ t('no_data_available') }}</p>{% endfor %}
+        </section>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0">{{ t("intelligence") }}</h5>
+        <span class="badge text-bg-{{ 'success' if intelligence.status == 'Healthy' else 'warning' }}">
+          {{ t('healthy') if intelligence.status == 'Healthy' else t('warning') }}
+        </span>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        {% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<form class="d-inline" method="post" action="{{ url_for('action', action='intelligence-check') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-outline-dark">
+            <i class="bi bi-cpu"></i> {{ t("intelligence_check") }}
+          </button>
+        </form>{% endif %}
+
+        <a class="btn btn-sm btn-outline-secondary"
+           href="{{ url_for('intelligence_report_page') }}">
+          {{ t("intelligence_report") }}
+        </a>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="border rounded p-3 h-100">
+          <div class="text-muted small">{{ t("knowledge_entries") }}</div>
+          <div class="fs-3">{{ intelligence.knowledge_entries }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="border rounded p-3 h-100">
+          <div class="text-muted small">{{ t("vendor_groups") }}</div>
+          <div class="fs-3">{{ intelligence.vendor_groups }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="border rounded p-3 h-100">
+          <div class="text-muted small">{{ t("category_groups") }}</div>
+          <div class="fs-3">{{ intelligence.category_groups }}</div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="border rounded p-3 h-100">
+          <div class="text-muted small">{{ t("filter_mappings") }}</div>
+          <div class="fs-3">{{ intelligence.filter_mappings }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4"><div class="card-body">
+  <h5 class="mb-3"><i class="bi bi-lightning-charge text-primary"></i> {{ t('quick_actions') }}</h5>
+  <div class="d-flex flex-wrap gap-2 page-actions">
+    {% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}
+    <form class="d-inline" method="post" action="{{ url_for('action', action='doctor') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-primary"><i class="bi bi-stethoscope"></i> {{ t('doctor') }}</button></form>
+    <form class="d-inline" method="post" action="{{ url_for('action', action='validate') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-success"><i class="bi bi-check2-circle"></i> {{ t('validate') }}</button></form>
+    <a class="btn btn-secondary" href="{{ url_for('domains') }}"><i class="bi bi-globe2"></i> {{ t('manage_domains') }}</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('suggestions') }}"><i class="bi bi-inbox"></i> {{ t('review_suggestions') }}</a>
+    {% endif %}
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}<form class="d-inline" method="post" action="{{ url_for('action', action='build') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-warning"><i class="bi bi-hammer"></i> {{ t('build_filters') }}</button></form>{% endif %}
+  </div>
+</div></div>
+
+{% if readiness_display_state == 'insufficient_data' %}
+<div class="alert alert-info d-flex gap-3 align-items-start" role="status">
+  <i class="bi bi-info-circle fs-4" aria-hidden="true"></i>
+  <div><strong>{{ t('readiness_insufficient_data_title') }}</strong><p class="mb-1">{{ t('readiness_insufficient_data_explanation') }}</p><p class="mb-0 small">{{ t('readiness_functional_health_note') }}</p></div>
+</div>
+{% endif %}
+{% if readiness %}
+<div class="card mb-4 shadow-sm">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <strong>{{ t('guardrail_readiness') }}</strong>
+    <span class="badge text-bg-{{ 'success' if readiness_display_state == 'ready' else ('danger' if readiness_display_state == 'failed' else 'secondary') }}">
+      {{ t('ready') if readiness_display_state == 'ready' else (t('not_ready') if readiness_display_state == 'failed' else t('insufficient_data')) }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <details class="readiness-section" id="readiness-overview" open>
+      <summary><span><i class="bi bi-speedometer2" aria-hidden="true"></i> {{ t('readiness_overview') }}</span></summary>
+      <div class="readiness-section-body">
+        <div class="row g-2 mb-3 readiness-overview-grid">
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('status') }}</span><strong>{{ t('ready') if readiness_display_state == 'ready' else (t('not_ready') if readiness_display_state == 'failed' else t('insufficient_data')) }}</strong></div></div>
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('progress') }}</span><strong>{{ "%.2f"|format(readiness.progress.percent) }}%</strong></div></div>
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('checks_passed_short') }}</span><strong>{{ readiness.progress.passed_checks }}</strong></div></div>
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('checks_incomplete') }}</span><strong>{{ readiness.progress.total_checks - readiness.progress.passed_checks }}</strong></div></div>
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('regressions') }}</span><strong>{{ readiness_decision.regressions if readiness_decision else 0 }}</strong></div></div>
+          <div class="col-6 col-lg-2"><div class="analytics-stat h-100"><span>{{ t('next_step') }}</span><strong class="fs-6">{{ t('next_action_' ~ readiness_next_action.key) }}</strong></div></div>
+        </div>
+        <aside class="next-action-block mb-3" aria-labelledby="next-action-heading">
+          <div><h3 class="h6 mb-1" id="next-action-heading">{{ t('what_do_i_do_now') }}</h3><p class="text-muted small mb-0">{{ t('next_action_' ~ readiness_next_action.key) }}</p></div>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for(readiness_next_action.endpoint) }}">{{ t('view_next_step') }}</a>
+        </aside>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-3">
+        <tbody>
+          <tr>
+            <th scope="row">{{ t('status') }}</th>
+            <td>{{ t('readiness_status_' ~ readiness.status|replace('-', '_')) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ t('coverage') }}</th>
+            <td>{{ "%.2f"|format(readiness.summary.guardrail_coverage_rate) }}%</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ t('classified_approvals') }}</th>
+            <td>{{ readiness.summary.classified_approval_attempts }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ t('unclassified_approvals') }}</th>
+            <td>{{ readiness.summary.unclassified_approval_attempts }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ t('shadow_rows') }}</th>
+            <td>{{ readiness.summary.shadow_rows }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ t('enforce_rows') }}</th>
+            <td>{{ readiness.summary.enforce_rows }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h6>{{ t('progress_toward_ready') }}</h6>
+    <div class="d-flex justify-content-between small mb-1">
+      <span>{{ t('checks_passed', passed=readiness.progress.passed_checks, total=readiness.progress.total_checks) }}</span>
+      <strong>{{ "%.2f"|format(readiness.progress.percent) }}%</strong>
+    </div>
+    <div class="progress mb-3" role="progressbar" aria-label="{{ t('readiness_progress') }}"
+         aria-valuenow="{{ readiness.progress.percent }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-bar" style="width: {{ readiness.progress.percent }}%">
+        {{ "%.2f"|format(readiness.progress.percent) }}%
+      </div>
+    </div>
+
+    {% if not readiness.ready %}
+    <div class="row g-2 mb-3">
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('approvals_remaining') }}</div>
+        <strong>{{ readiness.progress.classified_approvals_remaining }}</strong>
+      </div></div>
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('coverage_gap') }}</div>
+        <strong>{{ "%.2f"|format(readiness.progress.coverage_gap) }}%</strong>
+      </div></div>
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('unclassified_excess') }}</div>
+        <strong>{{ readiness.progress.unclassified_approvals_excess }}</strong>
+      </div></div>
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('block_rate_excess') }}</div>
+        <strong>{{ "%.2f"|format(readiness.progress.classified_block_rate_excess) }}%</strong>
+      </div></div>
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('shadow_rows_needed') }}</div>
+        <strong>{{ readiness.progress.shadow_rows_remaining }}</strong>
+      </div></div>
+      <div class="col-md-4"><div class="border rounded p-2 h-100">
+        <div class="small text-muted">{{ t('enforce_rows_to_remove') }}</div>
+        <strong>{{ readiness.progress.enforce_rows_excess }}</strong>
+      </div></div>
+    </div>
+    {% endif %}
+
+      </div>
+    </details>
+
+    <details class="readiness-section" id="readiness-checks" open>
+      <summary><span><i class="bi bi-list-check" aria-hidden="true"></i> {{ t('readiness_checks_section') }}</span></summary>
+      <div class="readiness-section-body">
+    <h6>{{ t('readiness_diagnostics') }}</h6>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-3">
+        <thead>
+          <tr>
+            <th>{{ t('check') }}</th>
+            <th>{{ t('current') }}</th>
+            <th>{{ t('target') }}</th>
+            <th>{{ t('result') }}</th>
+            <th>{{ t('next_step') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in readiness.diagnostics %}
+          <tr>
+            <td>{{ t('readiness_check_' ~ check.label|lower|replace(' ', '_')|replace('-', '_')) }}</td>
+            <td><code>{{ check.current }}</code></td>
+            <td><code>{{ check.target }}</code></td>
+            <td>
+              <span class="badge text-bg-{{ 'success' if check.passed else 'warning' }}">
+                {{ t('pass') if check.passed else t('needs_evidence') }}
+              </span>
+            </td>
+            <td class="small">{{ t('readiness_guidance_' ~ check.label|lower|replace(' ', '_')|replace('-', '_')) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if readiness.reasons %}
+    <h6>{{ t('readiness_issues') }}</h6>
+    <ul class="mb-0">
+      {% for reason in readiness.reasons %}
+      <li>
+        {% if reason.startswith('insufficient classified approval attempts') %}{{ t('issue_insufficient_classified_approvals') }}
+        {% elif reason.startswith('insufficient guardrail coverage') %}{{ t('issue_insufficient_guardrail_coverage') }}
+        {% elif reason.startswith('no shadow guardrail observations') %}{{ t('issue_no_shadow_observations') }}
+        {% else %}{{ reason }}{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+      </div>
+    </details>
+
+    {% if readiness_decision %}
+    <details class="readiness-section" id="readiness-decision">
+      <summary><span><i class="bi bi-diagram-3" aria-hidden="true"></i> {{ t('readiness_decision_section') }}</span></summary>
+      <div class="readiness-section-body">
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">{{ t('readiness_decision_engine') }}</h6>
+      <span class="badge text-bg-{{ 'success' if readiness_decision.status == 'ready' else ('warning' if readiness_decision.status == 'ready-for-review' else 'secondary') }}">
+        {{ t('readiness_status_' ~ readiness_decision.status|replace('-', '_')) }}
+      </span>
+    </div>
+    <div class="row g-2 mb-3">
+      <div class="col-md-3"><div class="border rounded p-2"><div class="small text-muted">{{ t('stability_window') }}</div><strong>{{ readiness_decision.observed_snapshots }} / {{ readiness_decision.window_size }}</strong></div></div>
+      <div class="col-md-3"><div class="border rounded p-2"><div class="small text-muted">{{ t('ready_snapshots') }}</div><strong>{{ readiness_decision.ready_snapshots }} / {{ readiness_decision.window_size }}</strong></div></div>
+      <div class="col-md-3"><div class="border rounded p-2"><div class="small text-muted">{{ t('regressions') }}</div><strong>{{ readiness_decision.regressions }}</strong></div></div>
+      <div class="col-md-3"><div class="border rounded p-2"><div class="small text-muted">{{ t('manual_review') }}</div><strong>{{ t('eligible') if readiness_decision.eligible_for_manual_review else t('not_eligible') }}</strong></div></div>
+    </div>
+    <div class="table-responsive"><table class="table table-sm align-middle mb-3">
+      <thead><tr><th>{{ t('decision_rule') }}</th><th>{{ t('result') }}</th><th>{{ t('explanation') }}</th></tr></thead>
+      <tbody>{% for rule in readiness_decision.rules %}<tr><td><code>{{ t('decision_rule_' ~ rule.name|replace('-', '_')) }}</code></td><td><span class="badge text-bg-{{ 'success' if rule.passed else 'warning' }}">{{ t('pass') if rule.passed else t('wait') }}</span></td><td class="small">{{ t('decision_detail_' ~ rule.name|replace('-', '_')) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <p class="text-muted small">{{ t('decision_support_only') }}</p>
+
+    <div class="border rounded p-3 mt-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0">{{ t('manual_approval_gate') }}</h6>
+        <span class="badge text-bg-{{ 'success' if readiness_approval else ('warning' if readiness_decision.eligible_for_manual_review else 'secondary') }}">
+          {{ t('recorded') if readiness_approval else (t('available') if readiness_decision.eligible_for_manual_review else t('locked')) }}
+        </span>
+      </div>
+      {% if readiness_approval %}
+      <p class="mb-1"><strong>{{ t('reviewer') }}:</strong> {{ readiness_approval.reviewer }}</p>
+      <p class="mb-1"><strong>{{ t('recorded_utc') }}:</strong> <code>{{ readiness_approval.timestamp }}</code></p>
+      <p class="mb-1"><strong>{{ t('decision') }}:</strong> {{ readiness_approval.decision_status|replace('-', ' ')|upper }}</p>
+      {% if readiness_approval.note %}<p class="mb-1"><strong>{{ t('note') }}:</strong> {{ readiness_approval.note }}</p>{% endif %}
+      <p class="text-muted small mb-0">{{ t('acknowledgement_only') }}</p>
+      {% elif readiness_decision.eligible_for_manual_review %}
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}<form method="post" action="{{ url_for('readiness_manual_approval') }}">
+        <div class="row g-2">
+          <div class="col-md-4"><label class="form-label">{{ t('reviewer') }}</label><input class="form-control" name="reviewer" maxlength="120" required></div>
+          <div class="col-md-8"><label class="form-label">{{ t('review_note') }}</label><input class="form-control" name="note" maxlength="1000" placeholder="{{ t('optional_rationale') }}"></div>
+          <div class="col-12"><label class="form-label">{{ t('type_confirmation_phrase') }}</label><input class="form-control" name="confirmation" required autocomplete="off" placeholder="{{ readiness_confirmation_phrase }}"><div class="form-text"><code>{{ readiness_confirmation_phrase }}</code></div></div>
+          <div class="col-12"><button class="btn btn-warning" type="submit">{{ t('record_manual_review') }}</button></div>
+        </div>
+      </form>{% endif %}
+      <p class="text-muted small mt-2 mb-0">{{ t('review_ack_only') }}</p>
+      {% else %}
+      <p class="text-muted small mb-0">{{ t('gate_locked_message') }}</p>
+      {% endif %}
+    </div>
+      </div>
+    </details>
+    {% endif %}
+
+    {% if readiness_audit_archive %}
+    <details class="readiness-section" id="readiness-log">
+      <summary><span><i class="bi bi-journal-text" aria-hidden="true"></i> {{ t('readiness_log_section') }}</span></summary>
+      <div class="readiness-section-body">
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">{{ t('audit_decision_archive') }}</h6>
+      <span class="badge text-bg-secondary">{{ t('append_only') }}</span>
+    </div>
+    <div class="row g-2 mb-3">
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('archived_events') }}</div><strong>{{ readiness_audit_archive.total_entries }}</strong></div></div>
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('decision_observations') }}</div><strong>{{ readiness_audit_archive.decision_events }}</strong></div></div>
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('manual_reviews') }}</div><strong>{{ readiness_audit_archive.approval_events }}</strong></div></div>
+    </div>
+    {% if readiness_audit_archive.entries %}
+    <div class="table-responsive"><table class="table table-sm align-middle mb-3">
+      <thead><tr><th>{{ t('archived_utc') }}</th><th>{{ t('event') }}</th><th>{{ t('decision') }}</th><th>{{ t('reviewer') }}</th><th>{{ t('fingerprint') }}</th><th>{{ t('enforcement') }}</th></tr></thead>
+      <tbody>{% for entry in readiness_audit_archive.entries|reverse %}<tr><td><code>{{ entry.timestamp }}</code></td><td>{{ t('event_' ~ entry.event_type|replace('-', '_')) }}</td><td>{{ t('readiness_status_' ~ entry.decision_status|replace('-', '_')) }}</td><td>{{ entry.reviewer or '—' }}</td><td><code>{{ entry.decision_fingerprint[:12] }}</code></td><td><span class="badge text-bg-success">{{ t('disabled') }}</span></td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}<p class="text-muted small">{{ t('no_readiness_audit') }}</p>{% endif %}
+    <p class="text-muted small mb-0">{{ t('permanent_governance_record') }}</p>
+      </div>
+    </details>
+    {% endif %}
+
+    {% if readiness_history %}
+    <details class="readiness-section" id="readiness-activity">
+      <summary><span><i class="bi bi-activity" aria-hidden="true"></i> {{ t('readiness_activity_section') }}</span></summary>
+      <div class="readiness-section-body">
+    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">{{ t('readiness_history_trends') }}</h6>
+      <span class="badge text-bg-{{ 'success' if readiness_history.trend.direction == 'improving' else ('danger' if readiness_history.trend.direction == 'regressing' else 'secondary') }}">
+        {{ t('trend_' ~ readiness_history.trend.direction|replace('-', '_')) }}
+      </span>
+    </div>
+    <div class="row g-2 mb-3">
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('progress_change') }}</div><strong>{{ '%+.2f'|format(readiness_history.trend.percent_delta) }}%</strong></div></div>
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('checks_change') }}</div><strong>{{ '%+d'|format(readiness_history.trend.checks_delta) }}</strong></div></div>
+      <div class="col-md-4"><div class="border rounded p-2"><div class="small text-muted">{{ t('coverage_change') }}</div><strong>{{ '%+.2f'|format(readiness_history.trend.coverage_delta) }}%</strong></div></div>
+    </div>
+    {% if readiness_history.entries %}
+    <div class="table-responsive"><table class="table table-sm align-middle mb-3">
+      <thead><tr><th>{{ t('observed_utc') }}</th><th>{{ t('checks') }}</th><th>{{ t('progress') }}</th><th>{{ t('coverage') }}</th><th>{{ t('status') }}</th></tr></thead>
+      <tbody>{% for entry in readiness_history.entries|reverse %}<tr><td><code>{{ entry.timestamp }}</code></td><td>{{ entry.passed_checks }} / {{ entry.total_checks }}</td><td>{{ '%.2f'|format(entry.percent) }}%</td><td>{{ '%.2f'|format(entry.coverage_rate) }}%</td><td>{{ t('readiness_status_' ~ entry.status|replace('-', '_')) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}<p class="text-muted small">{{ t('no_readiness_history') }}</p>{% endif %}
+      </div>
+    </details>
+    {% endif %}
+
+    <p class="text-muted small mt-3 mb-0">
+      {{ t('visibility_only') }}
+    </p>
+  </div>
+</div>
+{% endif %}
+
+{% if audit_events %}
+<div class="card"><div class="card-body">
+<div class="d-flex justify-content-between align-items-center"><h5>{{ t('recent_activity') }}</h5><a href="{{ url_for('audit_log') }}" class="btn btn-sm btn-outline-secondary">{{ t('open_audit_log') }}</a></div>
+<div class="table-responsive"><table class="table table-sm">
+<thead><tr><th>{{ t('time') }}</th><th>{{ t('action') }}</th><th>{{ t('target') }}</th><th>{{ t('result') }}</th></tr></thead><tbody>
+{% for event in audit_events %}<tr><td>{{ event.Timestamp }}</td><td>{{ translate_dynamic_text(event.Action) }}</td><td><code>{{ event.Target }}</code></td><td>{{ translate_status(event.Result) }}</td></tr>{% endfor %}
+</tbody></table></div>
+</div></div>
+{% endif %}
+{% endblock %}

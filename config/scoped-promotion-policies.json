@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "mode": "shadow",
+  "policies": [
+    {
+      "category": "Connectivity",
+      "current_filter": "privacy",
+      "proposed_filter": "connectivity",
+      "authorized_suffixes": [
+        "gstatic.com"
+      ]
+    },
+    {
+      "category": "Streaming",
+      "current_filter": "social",
+      "proposed_filter": "streaming",
+      "authorized_suffixes": [
+        "amazonvideo.com",
+        "shahid.net"
+      ]
+    }
+  ]
+}

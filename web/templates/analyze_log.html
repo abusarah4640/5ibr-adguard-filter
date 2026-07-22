@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('analyze_log') }}</h1>{% if output %}<span class="visually-hidden">{{ t('exit_code') }}: {{ code }}</span>{% endif %}
+<form method="post" enctype="multipart/form-data" class="card mb-4"><div class="card-body">
+  <div class="mb-3"><label class="form-label">{{ t('server_path') }}</label><input class="form-control" name="path" placeholder="/opt/adguard/work/data/querylog.json"></div>
+  <div class="mb-3"><label class="form-label">{{ t('upload_querylog') }}</label><input class="form-control" type="file" name="querylog"></div>
+  <div class="row"><div class="col"><label class="form-label">{{ t('min_seen') }}</label><input class="form-control" name="min_seen" value="10"></div><div class="col"><label class="form-label">{{ t('limit') }}</label><input class="form-control" name="limit" value="100"></div></div>
+  <button class="btn btn-primary mt-3">{{ t('analyze') }} Log</button>
+</div></form>
+{% if output %}<div class="card operational-console mb-3"><div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3"><div><span class="text-muted small">{{ t('decision_summary') }}</span><div class="h4 mb-0 status-ring text-{{ 'success' if code == 0 else 'danger' }}">{{ t('operation_status_success') if code == 0 else t('operation_status_failure') }}</div></div><a class="btn btn-primary" href="{{ url_for('suggestions') }}">{{ t('open_suggestions') }}</a></div></div><details class="card"><summary class="card-header fw-semibold"><i class="bi bi-terminal"></i> {{ t('show_raw_report') }}</summary><pre class="card-body operation-output mb-0">{{ output }}</pre></details>{% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{
+    "Adult": [
+        "Adult"
+    ],
+    "Google": [
+        "Telemetry",
+        "Ads"
+    ],
+    "Huawei": [
+        "Telemetry"
+    ],
+    "LG": [
+        "Smart TV"
+    ],
+    "Meta": [
+        "Social"
+    ],
+    "Microsoft": [
+        "Telemetry"
+    ],
+    "OPPO": [
+        "Telemetry"
+    ],
+    "Riot Games": [
+        "Gaming"
+    ],
+    "Xiaomi": [
+        "Telemetry"
+    ]
+}

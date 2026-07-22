@@ -1,0 +1,7 @@
+Stage 65E-E5 test fixture fix
+
+Fixes tests/test_dashboard_readiness_history.py by supplying the complete
+readiness.summary contract required by dashboard.html.
+
+No production code is changed.
+Enforcement remains disabled.

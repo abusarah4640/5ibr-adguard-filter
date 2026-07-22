@@ -1,0 +1,10 @@
+Stage 65E Release Closure — 5ibr Filter Toolkit v2.0.0
+
+This package prepares release metadata only. It does not enable enforcement.
+
+Apply the archive, then run:
+  python scripts/release/prepare_v2_0_0.py
+  pytest tests/test_release_v2_metadata.py -q
+  pytest -q
+  rm -rf build dist *.egg-info
+  python -m build

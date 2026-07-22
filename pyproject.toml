@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fivebr"
-version = "1.0.0"
+version = "2.0.1"
 description = "5ibr AdGuard Filter Development Toolkit"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,7 +14,10 @@ authors = [
     { name = "5ibr" }
 ]
 
-dependencies = []
+dependencies = [
+    "Flask>=3.0",
+    "Flask-Login>=0.6.3",
+]
 
 [tool.pytest.ini_options]
 pythonpath = [
@@ -31,3 +34,21 @@ target-version = "py311"
 
 [tool.black]
 line-length = 88
+
+
+[project.scripts]
+fivebr = "fivebr:main"
+fivebr-web = "web.app:main"
+
+
+[tool.setuptools]
+py-modules = ["fivebr"]
+packages = ["scripts", "scripts.builders", "scripts.services", "scripts.operations", "scripts.runtime", "scripts.runtime.seeds", "web"]
+
+[tool.setuptools.package-data]
+"web" = ["templates/*.html", "static/css/*.css", "static/js/*.js"]
+"scripts.runtime.seeds" = [
+    "config/*.json",
+    "database/*.csv",
+    "filters/*.txt",
+]

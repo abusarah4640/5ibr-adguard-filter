@@ -1,4 +1,1 @@
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||activity.windows.com^
+activity.windows.com

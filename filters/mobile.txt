@@ -1,6 +1,3 @@
-! Title: 5ibr Filter
-! Generated automatically.
-!
-||metrics.data.hicloud.com^
-||tracking.coloros.com^
-||tracking.miui.com^
+metrics.data.hicloud.com
+tracking.coloros.com
+tracking.miui.com

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>{{ t('domains') }}</h1>
+  {% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-primary" href="{{ url_for('add_domain_page') }}">{{ t('add_domain') }}</a>{% endif %}
+</div>
+
+<form class="card card-body mb-3" method="get">
+  <div class="row g-2">
+    <div class="col-md-4">
+      <input class="form-control" name="q" value="{{ q or '' }}" placeholder="{{ t('search_placeholder') }}">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="vendor">
+        <option value="">{{ t('vendor') }}</option>
+        {% for v in vendors %}<option value="{{ v }}" {% if vendor == v %}selected{% endif %}>{{ v }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="category">
+        <option value="">{{ t('category') }}</option>
+        {% for c in categories %}<option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="filter">
+        <option value="">{{ t('filter') }}</option>
+        {% for f in filters %}<option value="{{ f }}" {% if filter_name == f %}selected{% endif %}>{{ f }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-1">
+      <select class="form-select" name="status">
+        <option value="">{{ t('status') }}</option>
+        <option value="Approved" {% if status == 'Approved' %}selected{% endif %}>{{ t('approved') }}</option>
+        <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>{{ t('pending') }}</option>
+        <option value="Rejected" {% if status == 'Rejected' %}selected{% endif %}>{{ t('rejected') }}</option>
+      </select>
+    </div>
+    <div class="col-md-1"><button class="btn btn-outline-secondary w-100">{{ t('filter') }}</button></div>
+  </div>
+</form>
+
+<p class="text-muted">{{ t('showing_domains', count=rows|length) }}</p>
+<div class="card"><div class="table-responsive"><table class="table table-sm table-striped align-middle mb-0">
+<thead><tr><th>{{ t('domain') }}</th><th>{{ t('vendor') }}</th><th>{{ t('category') }}</th><th>{{ t('filter') }}</th><th>{{ t('status') }}</th><th>{{ t('confidence') }}</th><th>{{ t('actions') }}</th></tr></thead>
+<tbody>
+{% for row in rows %}
+<tr>
+  <td><code>{{ row.Domain }}</code></td>
+  <td>{{ row.Vendor }}</td>
+  <td>{{ row.Category }}</td>
+  <td><span class="badge text-bg-light">{{ row.Filter }}</span></td>
+  {% set display_status = row.Status or 'Approved' %}
+  <td>{{ t(display_status|lower) if display_status in ['Approved', 'Pending', 'Rejected'] else display_status }}</td>
+  <td>{{ row.Confidence }}</td>
+  <td>
+    {% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-sm btn-outline-secondary" href="{{ url_for('analyze') }}?domain={{ row.Domain }}">{{ t('analyze') }}</a>
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_domain', domain=row.Domain) }}">{{ t('edit') }}</a>{% endif %}
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}<form class="d-inline" method="post" action="{{ url_for('delete_domain', domain=row.Domain) }}" onsubmit="return confirm('{{ t('delete') }} {{ row.Domain }}?')"><button class="btn btn-sm btn-outline-danger">{{ t('delete') }}</button></form>{% endif %}
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="7"><div class="empty-state"><span class="empty-state-icon mb-3"><i class="bi bi-globe2"></i></span><h3 class="h5 text-body">{{ t('no_results') }}</h3><p>{{ t('domains_empty_desc') }}</p>{% if current_user.is_authenticated and current_user.role in ['admin', 'editor'] %}<a class="btn btn-primary" href="{{ url_for('add_domain_page') }}"><i class="bi bi-plus-lg"></i> {{ t('add_domain') }}</a>{% endif %}</div></td></tr>
+{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

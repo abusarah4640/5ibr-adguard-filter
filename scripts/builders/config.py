@@ -1,26 +1,40 @@
 #!/usr/bin/env python3
 
-"""
-Generate configuration files from the centralized domain database.
-"""
+"""Generate runtime vendor and signature configuration."""
 
-from pathlib import Path
 import json
+from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent.parent
+from scripts.runtime.paths import (
+    get_runtime_paths,
+)
 
-CONFIG_DIR = ROOT / "config"
+
+def get_config_dir() -> Path:
+    """Return the active runtime config directory."""
+
+    return get_runtime_paths().config
 
 
-def build_config(rows):
+CONFIG_DIR = get_config_dir()
 
-    CONFIG_DIR.mkdir(exist_ok=True)
 
-    vendors = {}
-    signatures = {}
+def build_config(
+    rows: list[dict],
+) -> None:
+    """Generate vendors.json and signatures.json."""
+
+    config_dir = get_config_dir()
+
+    config_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    vendors: dict[str, list[str]] = {}
+    signatures: dict[str, dict] = {}
 
     for row in rows:
-
         vendor = row["Vendor"].strip()
         category = row["Category"].strip()
         domain = row["Domain"].strip()
@@ -29,32 +43,46 @@ def build_config(rows):
             vendors[vendor] = []
 
         if category not in vendors[vendor]:
-            vendors[vendor].append(category)
+            vendors[vendor].append(
+                category
+            )
 
         signatures[domain] = {
             "vendor": vendor,
             "category": category,
             "filter": row["Filter"],
-            "confidence": int(row["Confidence"])
+            "confidence": int(
+                row["Confidence"]
+            ),
         }
 
-    with open(CONFIG_DIR / "vendors.json", "w", encoding="utf-8") as f:
-        json.dump(
+    (
+        config_dir
+        / "vendors.json"
+    ).write_text(
+        json.dumps(
             vendors,
-            f,
             indent=4,
             ensure_ascii=False,
-            sort_keys=True
+            sort_keys=True,
         )
+        + "\n",
+        encoding="utf-8",
+    )
 
-    with open(CONFIG_DIR / "signatures.json", "w", encoding="utf-8") as f:
-        json.dump(
+    (
+        config_dir
+        / "signatures.json"
+    ).write_text(
+        json.dumps(
             signatures,
-            f,
             indent=4,
             ensure_ascii=False,
-            sort_keys=True
+            sort_keys=True,
         )
+        + "\n",
+        encoding="utf-8",
+    )
 
     print("Generated vendors.json")
     print("Generated signatures.json")

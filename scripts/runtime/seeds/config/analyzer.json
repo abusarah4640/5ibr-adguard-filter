@@ -1,0 +1,131 @@
+{
+  "vendor_patterns": {
+    "Microsoft": [
+      "microsoft.com",
+      "windows.com",
+      "data.microsoft.com"
+    ],
+    "Google": [
+      "google.com",
+      "doubleclick.net",
+      "googlesyndication.com",
+      "googleapis.com",
+      "gvt1.com",
+      "gvt2.com",
+      "gstatic.com",
+      "googleusercontent.com",
+      "googlevideo.com"
+    ],
+    "Meta": [
+      "facebook.com",
+      "facebook.net",
+      "fbcdn.net",
+      "instagram.com"
+    ],
+    "Xiaomi": [
+      "miui.com",
+      "xiaomi.com"
+    ],
+    "Huawei": [
+      "hicloud.com",
+      "huawei.com"
+    ],
+    "LG": [
+      "lgtvcommon.com"
+    ],
+    "Riot Games": [
+      "riotgames.com"
+    ],
+    "Sony PlayStation": [
+      "playstation.com",
+      "playstation.net",
+      "sonyentertainmentnetwork.com",
+      "scea.com",
+      "sony.com"
+    ],
+    "Netflix": [
+      "netflix.com",
+      "nflxvideo.net",
+      "nflximg.net",
+      "nflxext.com",
+      "nflxso.net"
+    ],
+    "Roblox": [
+      "roblox.com",
+      "rbxcdn.com",
+      "roblox.cn"
+    ],
+    "Shahid": [
+      "shahid.net",
+      "mbc.net"
+    ]
+  },
+  "category_keywords": {
+    "Ads": [
+      "ads",
+      "adservice",
+      "doubleclick",
+      "pagead"
+    ],
+    "Telemetry": [
+      "telemetry",
+      "events",
+      "metrics",
+      "logging",
+      "diagnostics",
+      "beacon",
+      "beacons",
+      "event",
+      "stats",
+      "collect",
+      "measurement"
+    ],
+    "Privacy": [
+      "tracking",
+      "track",
+      "analytics"
+    ],
+    "Crash Reporting": [
+      "crashlytics",
+      "crash",
+      "watson"
+    ],
+    "Social": [
+      "facebook",
+      "graph",
+      "connect"
+    ],
+    "Gaming": [
+      "riotgames",
+      "gaming",
+      "playstation",
+      "psn",
+      "roblox",
+      "game"
+    ],
+    "Streaming": [
+      "netflix",
+      "nflx",
+      "shahid",
+      "youtube",
+      "video",
+      "stream",
+      "media"
+    ],
+    "Connectivity": [
+      "connectivitycheck",
+      "generate_204",
+      "gstatic"
+    ]
+  },
+  "filter_map": {
+    "Ads": "ads",
+    "Telemetry": "telemetry",
+    "Privacy": "privacy",
+    "Crash Reporting": "telemetry",
+    "Social": "social",
+    "Gaming": "gaming",
+    "Streaming": "social",
+    "Connectivity": "privacy"
+  }
+}

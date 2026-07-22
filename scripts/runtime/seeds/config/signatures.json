@@ -1,0 +1,194 @@
+{
+    "activity.windows.com": {
+        "category": "Telemetry",
+        "confidence": 95,
+        "filter": "privacy",
+        "vendor": "Microsoft"
+    },
+    "app-measurement.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Google"
+    },
+    "browser.events.data.microsoft.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Microsoft"
+    },
+    "chaturbate.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "connect.facebook.net": {
+        "category": "Social",
+        "confidence": 90,
+        "filter": "social",
+        "vendor": "Meta"
+    },
+    "doubleclick.net": {
+        "category": "Ads",
+        "confidence": 100,
+        "filter": "ads",
+        "vendor": "Google"
+    },
+    "eic.homeprv.lgtvcommon.com": {
+        "category": "Smart TV",
+        "confidence": 100,
+        "filter": "smart-tv",
+        "vendor": "LG"
+    },
+    "eic.rdl.lgtvcommon.com": {
+        "category": "Smart TV",
+        "confidence": 100,
+        "filter": "smart-tv",
+        "vendor": "LG"
+    },
+    "firebase-settings.crashlytics.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Google"
+    },
+    "firebasecrashlytics.googleapis.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Google"
+    },
+    "firebaseinstallations.googleapis.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Google"
+    },
+    "firebaselogging.googleapis.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Google"
+    },
+    "googleads.g.doubleclick.net": {
+        "category": "Ads",
+        "confidence": 100,
+        "filter": "ads",
+        "vendor": "Google"
+    },
+    "graph.facebook.com": {
+        "category": "Social",
+        "confidence": 90,
+        "filter": "social",
+        "vendor": "Meta"
+    },
+    "livejasmin.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "metrics.data.hicloud.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "mobile",
+        "vendor": "Huawei"
+    },
+    "mobile.events.data.microsoft.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Microsoft"
+    },
+    "pagead2.googlesyndication.com": {
+        "category": "Ads",
+        "confidence": 100,
+        "filter": "ads",
+        "vendor": "Google"
+    },
+    "pornhub.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "redtube.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "settings-win.data.microsoft.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Microsoft"
+    },
+    "spankbang.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "stripchat.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "telemetry.riotgames.com": {
+        "category": "Gaming",
+        "confidence": 100,
+        "filter": "gaming",
+        "vendor": "Riot Games"
+    },
+    "tracking.coloros.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "mobile",
+        "vendor": "OPPO"
+    },
+    "tracking.miui.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "mobile",
+        "vendor": "Xiaomi"
+    },
+    "v10.events.data.microsoft.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Microsoft"
+    },
+    "watson.telemetry.microsoft.com": {
+        "category": "Telemetry",
+        "confidence": 100,
+        "filter": "telemetry",
+        "vendor": "Microsoft"
+    },
+    "xhamster.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "xnxx.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "xvideos.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    },
+    "youporn.com": {
+        "category": "Adult",
+        "confidence": 100,
+        "filter": "adult",
+        "vendor": "Adult"
+    }
+}

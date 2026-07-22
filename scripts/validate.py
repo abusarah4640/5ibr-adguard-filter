@@ -5,16 +5,27 @@ from pathlib import Path
 
 from scripts.cli import parse_no_args
 
-ROOT = Path(__file__).resolve().parent.parent
+from scripts.runtime.paths import (
+    get_runtime_paths,
+)
 
-RELEASES_CONFIG = ROOT / "config" / "releases.json"
-FILTERS = ROOT / "filters"
+ROOT = get_runtime_paths().root
+
+RELEASES_CONFIG = get_runtime_paths().config / "releases.json"
+FILTERS = get_runtime_paths().filters
 
 
 def load_release_filters() -> list[str]:
     """Return the filter names referenced by release definitions."""
 
-    with open(RELEASES_CONFIG, encoding="utf-8") as f:
+    releases_config = (
+        get_runtime_paths().config
+        / "releases.json"
+    )
+
+    with releases_config.open(
+        encoding="utf-8"
+    ) as f:
         data = json.load(f)
 
     names = set()
@@ -31,7 +42,7 @@ def load_filter_files() -> dict[str, Path]:
     files = {path.stem: path for path in FILTERS.glob("*.txt")}
 
     for name in load_release_filters():
-        files.setdefault(name, FILTERS / f"{name}.txt")
+        files.setdefault(name, get_runtime_paths().filters / f"{name}.txt")
 
     return dict(sorted(files.items()))
 

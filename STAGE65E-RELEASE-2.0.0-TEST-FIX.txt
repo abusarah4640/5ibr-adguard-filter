@@ -1,0 +1,8 @@
+Stage 65E Release 2.0.0 test-contract fix
+
+Scope:
+- tests/test_release_version_contract.py
+- tests/test_web_runtime_paths.py
+
+The included script replaces stale hard-coded 1.9.0 expectations with 2.0.0.
+No application or production code is changed.

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-4">{{ t('login') }}</h1>
+
+        <form method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="mb-3">
+            <label class="form-label">{{ t('username') }}</label>
+            <input
+              class="form-control"
+              name="username"
+              autocomplete="username"
+              required
+              autofocus
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{ t('password') }}</label>
+            <input
+              class="form-control"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="remember"
+              id="remember"
+            >
+            <label class="form-check-label" for="remember">
+              {{ t('remember_me') }}
+            </label>
+          </div>
+
+          <button class="btn btn-primary w-100">
+            {{ t('login') }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

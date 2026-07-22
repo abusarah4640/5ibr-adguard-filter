@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('add_domain') if mode == 'add' else t('edit_domain') }}</h1>
+<form method="post" class="card"><div class="card-body">
+  <div class="mb-3">
+    <label class="form-label">{{ t('domain') }}</label>
+    <input class="form-control" name="domain" value="{{ row.Domain if row else '' }}" {% if mode == 'edit' %}readonly{% endif %} required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">{{ t('vendor') }}</label>
+    <input class="form-control" name="vendor" value="{{ row.Vendor if row else '' }}" list="vendor-options" required>
+    <datalist id="vendor-options">{% for v in vendors %}<option value="{{ v }}">{% endfor %}</datalist>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">{{ t('category') }}</label>
+    <input class="form-control" name="category" value="{{ row.Category if row else '' }}" list="category-options" required>
+    <datalist id="category-options">{% for c in categories %}<option value="{{ c }}">{% endfor %}</datalist>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">{{ t('filter') }}</label>
+    <input class="form-control" name="filter" value="{{ row.Filter if row else '' }}" list="filter-options" required>
+    <datalist id="filter-options">{% for f in filters %}<option value="{{ f }}">{% endfor %}</datalist>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">{{ t('confidence') }}</label>
+    <input class="form-control" type="number" name="confidence" min="0" max="100" value="{{ row.Confidence if row else '100' }}" required>
+  </div>
+  {% set current_status = row.Status if row else 'Approved' %}
+  <div class="mb-3">
+    <label class="form-label">{{ t('status') }}</label>
+    <select class="form-select" name="status">
+      <option value="Approved" {% if current_status == 'Approved' %}selected{% endif %}>{{ t('approved') }}</option>
+      <option value="Pending" {% if current_status == 'Pending' %}selected{% endif %}>{{ t('pending') }}</option>
+      <option value="Rejected" {% if current_status == 'Rejected' %}selected{% endif %}>{{ t('rejected') }}</option>
+    </select>
+  </div>
+  <button class="btn btn-primary">{{ t('save') }}</button>
+  <a class="btn btn-secondary" href="{{ url_for('domains') }}">{{ t('cancel') }}</a>
+</div></form>
+{% endblock %}

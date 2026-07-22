@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "enabled": true,
+  "required_readiness_decision": "PROMOTION_READY",
+  "policy_sha256": "836bbfb8c00f968c3d97a1ed4e912afd6753a5124d2d3c14b931502bb4716303",
+  "authorized_domains": [
+    "api3.shahid.net",
+    "avpk-a38yvicf2sm94i-0.zaz.api.amazonvideo.com",
+    "cdxaws-shahidsprite.shahid.net",
+    "csi.gstatic.com",
+    "encrypted-tbn0.gstatic.com",
+    "encrypted-tbn2.gstatic.com",
+    "encrypted-tbn3.gstatic.com",
+    "fonts.gstatic.com",
+    "qgmg.api.amazonvideo.com",
+    "ssl.gstatic.com",
+    "threeplr-a38yvicf2sm94i-0.zaz.api.amazonvideo.com",
+    "tvweb.shahid.net",
+    "www.gstatic.com"
+  ]
+}
