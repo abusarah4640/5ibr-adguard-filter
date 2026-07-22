@@ -10,7 +10,10 @@ from pathlib import Path
 import pytest
 
 from scripts.runtime.project_init import initialize_project
-from scripts.validate import validate_runtime
+from scripts.validate import (
+    validate_filter_rule,
+    validate_runtime,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -123,5 +126,79 @@ def test_validate_rejects_tampered_release(built_runtime):
     assert any(
         "releases/home.txt" in error
         and "does not match" in error
+        for error in errors
+    )
+
+
+@pytest.mark.parametrize(
+    ("filename", "rule"),
+    (
+        ("ads.txt", "example.com"),
+        ("telemetry.txt", "sub.example.co.uk"),
+        ("ads.txt", "مثال.إختبار"),
+        ("whitelist.txt", "@@||account.example.com^"),
+    ),
+)
+def test_supported_filter_rule_shapes_are_accepted(
+    filename,
+    rule,
+):
+    assert validate_filter_rule(filename, rule) is None
+
+
+@pytest.mark.parametrize(
+    ("filename", "rule", "message"),
+    (
+        ("ads.txt", "https://example.com", "invalid domain"),
+        ("ads.txt", "*.example.com", "invalid domain"),
+        ("ads.txt", "Example.com", "lowercase"),
+        ("ads.txt", "localhost", "at least two labels"),
+        ("ads.txt", "-bad.example", "invalid domain label"),
+        (
+            "ads.txt",
+            "@@||example.com^",
+            "only allowed in whitelist.txt",
+        ),
+        (
+            "whitelist.txt",
+            "example.com",
+            "must use @@||domain^ syntax",
+        ),
+        (
+            "whitelist.txt",
+            "@@||example.com/path^",
+            "invalid domain",
+        ),
+    ),
+)
+def test_unsupported_filter_rule_shapes_are_rejected(
+    filename,
+    rule,
+    message,
+):
+    error = validate_filter_rule(filename, rule)
+
+    assert error is not None
+    assert message in error
+
+
+def test_validate_reports_invalid_rule_file_and_line(
+    built_runtime,
+):
+    path = built_runtime / "filters" / "ads.txt"
+    original = path.read_text(encoding="utf-8")
+    line_number = len(original.splitlines()) + 1
+    path.write_text(
+        original + "https://invalid.example/path\n",
+        encoding="utf-8",
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        error.startswith(
+            f"filters/ads.txt:{line_number}: "
+        )
+        and "invalid domain" in error
         for error in errors
     )

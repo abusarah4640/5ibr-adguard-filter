@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -154,6 +155,69 @@ def load_filter_files(
     return dict(sorted(files.items()))
 
 
+DOMAIN_LABEL = re.compile(
+    r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
+)
+
+
+def validate_domain_name(domain: str) -> str | None:
+    """Return an error for an invalid DNS domain, otherwise None."""
+
+    if domain != domain.strip():
+        return "leading or trailing whitespace is not allowed"
+    if domain != domain.lower():
+        return "domain must be lowercase"
+    if domain.endswith("."):
+        return "trailing root dots are not allowed"
+
+    try:
+        ascii_domain = domain.encode("idna").decode("ascii")
+    except UnicodeError:
+        return "domain is not valid IDNA"
+
+    if len(ascii_domain) > 253:
+        return "domain exceeds 253 bytes"
+
+    labels = ascii_domain.split(".")
+    if len(labels) < 2:
+        return "domain must contain at least two labels"
+    if labels[-1].isdigit():
+        return "top-level label must not be numeric"
+
+    for label in labels:
+        if not label:
+            return "empty domain labels are not allowed"
+        if len(label) > 63:
+            return "domain label exceeds 63 bytes"
+        if DOMAIN_LABEL.fullmatch(label) is None:
+            return f"invalid domain label: {label}"
+
+    return None
+
+
+def validate_filter_rule(
+    filename: str,
+    line: str,
+) -> str | None:
+    """Validate one supported filter rule."""
+
+    if filename == "whitelist.txt":
+        match = re.fullmatch(r"@@\|\|(.+)\^", line)
+        if match is None:
+            return "whitelist rules must use @@||domain^ syntax"
+        domain = match.group(1)
+    else:
+        if line.startswith("@@"):
+            return "exception rules are only allowed in whitelist.txt"
+        domain = line
+
+    domain_error = validate_domain_name(domain)
+    if domain_error:
+        return f"invalid domain {domain!r}: {domain_error}"
+
+    return None
+
+
 def validate_filters(
     paths: RuntimePaths,
     releases: dict[str, dict[str, Any]],
@@ -212,6 +276,20 @@ def validate_filters(
                 continue
 
             total_rules += 1
+
+            rule_error = validate_filter_rule(
+                filename,
+                line,
+            )
+            if rule_error:
+                print(
+                    f"  ERROR : line {number}: {rule_error}"
+                )
+                errors.append(
+                    f"filters/{filename}:{number}: "
+                    f"{rule_error}"
+                )
+                continue
 
             if line in rules:
                 print(
