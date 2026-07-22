@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 import re
 from pathlib import Path
@@ -410,6 +412,246 @@ def validate_releases(
     return errors
 
 
+REQUIRED_DATABASE_FIELDS = (
+    "Domain",
+    "Vendor",
+    "Category",
+    "Filter",
+    "Confidence",
+    "Status",
+)
+VALID_DATABASE_STATUSES = {
+    "Pending",
+    "Approved",
+    "Rejected",
+}
+
+
+def validate_database(
+    paths: RuntimePaths,
+    filter_contents: dict[str, str],
+) -> list[str]:
+    """Validate the runtime CSV and its approved filter outputs."""
+
+    errors: list[str] = []
+    database_path = paths.database / "domains.csv"
+
+    if paths.database.is_symlink():
+        return [
+            "database: symbolic directories are not allowed"
+        ]
+    if not paths.database.is_dir():
+        return ["database: directory not found"]
+
+    try:
+        text = read_strict_text(database_path)
+    except (
+        FileNotFoundError,
+        UnicodeDecodeError,
+        ValueError,
+    ) as exc:
+        return [f"database/domains.csv: {exc}"]
+
+    if "\x00" in text:
+        return [
+            "database/domains.csv: NUL bytes are not allowed"
+        ]
+
+    try:
+        reader = csv.DictReader(
+            io.StringIO(text, newline=""),
+            strict=True,
+        )
+        fieldnames = reader.fieldnames
+        if fieldnames is None:
+            return ["database/domains.csv: missing CSV header"]
+
+        if any(not field for field in fieldnames):
+            errors.append(
+                "database/domains.csv: empty header fields "
+                "are not allowed"
+            )
+
+        duplicates = sorted({
+            field
+            for field in fieldnames
+            if fieldnames.count(field) > 1
+        })
+        if duplicates:
+            errors.append(
+                "database/domains.csv: duplicate header fields: "
+                + ", ".join(duplicates)
+            )
+
+        missing = [
+            field
+            for field in REQUIRED_DATABASE_FIELDS
+            if field not in fieldnames
+        ]
+        if missing:
+            errors.append(
+                "database/domains.csv: missing required fields: "
+                + ", ".join(missing)
+            )
+            return errors
+
+        try:
+            categories_data = load_json_file(
+                paths.config / "categories.json"
+            )
+        except (
+            OSError,
+            ValueError,
+        ):
+            categories_data = {}
+
+        categories = (
+            {
+                str(name).strip().replace("-", " ").lower()
+                for name in categories_data
+            }
+            if isinstance(categories_data, dict)
+            else set()
+        )
+
+        expected: dict[str, set[str]] = {}
+        seen_domains: dict[str, int] = {}
+
+        for row_number, row in enumerate(reader, start=2):
+            if None in row:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    "row has values beyond the CSV header"
+                )
+                continue
+
+            values = {
+                field: (row.get(field) or "").strip()
+                for field in REQUIRED_DATABASE_FIELDS
+            }
+            domain = values["Domain"]
+            vendor = values["Vendor"]
+            category = values["Category"]
+            filter_name = values["Filter"]
+            confidence_raw = values["Confidence"]
+            status = values["Status"]
+
+            domain_error = validate_domain_name(domain)
+            if domain_error:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    f"invalid domain {domain!r}: {domain_error}"
+                )
+            else:
+                seen_domains[domain] = (
+                    seen_domains.get(domain, 0) + 1
+                )
+
+            if not vendor:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    "vendor is required"
+                )
+
+            if not category:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    "category is required"
+                )
+            elif (
+                categories
+                and category.replace("-", " ").lower()
+                not in categories
+            ):
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    f"unknown category: {category}"
+                )
+
+            if not filter_name:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    "filter is required"
+                )
+            elif filter_name not in filter_contents:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    f"unknown filter: {filter_name}"
+                )
+
+            try:
+                confidence = int(confidence_raw)
+            except ValueError:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    f"invalid confidence: {confidence_raw!r}"
+                )
+            else:
+                if confidence < 0 or confidence > 100:
+                    errors.append(
+                        f"database/domains.csv:{row_number}: "
+                        f"confidence out of range: {confidence}"
+                    )
+
+            if status not in VALID_DATABASE_STATUSES:
+                errors.append(
+                    f"database/domains.csv:{row_number}: "
+                    f"invalid status: {status!r}"
+                )
+
+            if (
+                status == "Approved"
+                and domain_error is None
+                and filter_name in filter_contents
+            ):
+                expected.setdefault(
+                    filter_name,
+                    set(),
+                ).add(domain)
+
+    except csv.Error as exc:
+        errors.append(
+            f"database/domains.csv: malformed CSV: {exc}"
+        )
+        return errors
+
+    for domain, count in sorted(seen_domains.items()):
+        if count > 1:
+            errors.append(
+                "database/domains.csv: duplicate domain: "
+                f"{domain} ({count} rows)"
+            )
+
+    actual: dict[str, set[str]] = {}
+    for filter_name, filter_text in filter_contents.items():
+        if filter_name == "whitelist":
+            continue
+        actual[filter_name] = {
+            line.strip()
+            for line in filter_text.splitlines()
+            if line.strip()
+            and not line.strip().startswith("!")
+        }
+
+    for filter_name in sorted(set(expected) | set(actual)):
+        expected_rules = expected.get(filter_name, set())
+        actual_rules = actual.get(filter_name, set())
+
+        for domain in sorted(expected_rules - actual_rules):
+            errors.append(
+                f"filters/{filter_name}.txt: "
+                f"missing approved domain: {domain}"
+            )
+
+        for domain in sorted(actual_rules - expected_rules):
+            errors.append(
+                f"filters/{filter_name}.txt: "
+                f"domain is not approved in database: {domain}"
+            )
+
+    return errors
+
+
 def validate_runtime(
     root: str | Path | None = None,
 ) -> list[str]:
@@ -429,6 +671,12 @@ def validate_runtime(
     ) = validate_filters(paths, releases)
 
     errors.extend(filter_errors)
+    errors.extend(
+        validate_database(
+            paths,
+            filter_contents,
+        )
+    )
     errors.extend(
         validate_releases(
             paths,

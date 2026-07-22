@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import os
 import subprocess
 import sys
@@ -201,4 +203,192 @@ def test_validate_reports_invalid_rule_file_and_line(
         )
         and "invalid domain" in error
         for error in errors
+    )
+
+
+def rewrite_database(runtime, transform):
+    path = runtime / "database" / "domains.csv"
+    reader = csv.DictReader(
+        io.StringIO(path.read_text(encoding="utf-8"))
+    )
+    fieldnames = reader.fieldnames
+    assert fieldnames is not None
+    rows = list(reader)
+    if not rows:
+        rows.append({
+            "Domain": "database-test.example",
+            "Vendor": "Example",
+            "Category": "Ads",
+            "Filter": "ads",
+            "Confidence": "100",
+            "Status": "Approved",
+        })
+    transform(rows)
+
+    output = io.StringIO(newline="")
+    writer = csv.DictWriter(
+        output,
+        fieldnames=fieldnames,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(rows)
+    path.write_text(output.getvalue(), encoding="utf-8")
+
+
+def test_validate_rejects_database_symlink(
+    built_runtime,
+    tmp_path,
+):
+    path = built_runtime / "database" / "domains.csv"
+    target = tmp_path / "external-domains.csv"
+    target.write_bytes(path.read_bytes())
+    path.unlink()
+    path.symlink_to(target)
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        error.startswith("database/domains.csv:")
+        and "symbolic links" in error
+        for error in errors
+    )
+
+
+def test_validate_rejects_missing_database_fields(
+    built_runtime,
+):
+    path = built_runtime / "database" / "domains.csv"
+    path.write_text(
+        "Domain,Vendor\nexample.com,Example\n",
+        encoding="utf-8",
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        "database/domains.csv: missing required fields:"
+        in error
+        and "Category" in error
+        and "Status" in error
+        for error in errors
+    )
+
+
+def test_validate_rejects_malformed_csv(
+    built_runtime,
+):
+    path = built_runtime / "database" / "domains.csv"
+    path.write_text(
+        "Domain,Vendor,Category,Filter,Confidence,Status\n"
+        '"unterminated,Example,Ads,ads,100,Approved\n',
+        encoding="utf-8",
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        "database/domains.csv: malformed CSV:" in error
+        for error in errors
+    )
+
+
+def test_validate_rejects_values_beyond_csv_header(
+    built_runtime,
+):
+    path = built_runtime / "database" / "domains.csv"
+    path.write_text(
+        "Domain,Vendor,Category,Filter,Confidence,Status\n"
+        "example.com,Example,Ads,ads,100,Approved,extra\n",
+        encoding="utf-8",
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        "row has values beyond the CSV header" in error
+        for error in errors
+    )
+
+
+def test_validate_rejects_duplicate_database_domain(
+    built_runtime,
+):
+    def duplicate_first(rows):
+        rows.append(dict(rows[0]))
+
+    rewrite_database(built_runtime, duplicate_first)
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        "database/domains.csv: duplicate domain:" in error
+        for error in errors
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    (
+        ("Domain", "https://invalid.example", "invalid domain"),
+        ("Vendor", "", "vendor is required"),
+        ("Category", "Unknown Category", "unknown category"),
+        ("Filter", "unknown-filter", "unknown filter"),
+        ("Confidence", "not-a-number", "invalid confidence"),
+        ("Confidence", "101", "confidence out of range"),
+        ("Status", "Unknown", "invalid status"),
+    ),
+)
+def test_validate_rejects_invalid_database_values(
+    built_runtime,
+    field,
+    value,
+    message,
+):
+    def mutate_first(rows):
+        rows[0][field] = value
+
+    rewrite_database(built_runtime, mutate_first)
+
+    errors = validate_runtime(built_runtime)
+
+    assert any(
+        error.startswith("database/domains.csv:2:")
+        and message in error
+        for error in errors
+    )
+
+
+def test_validate_rejects_unapproved_filter_rule(
+    built_runtime,
+):
+    path = built_runtime / "filters" / "ads.txt"
+    path.write_text(
+        "unapproved.example\n",
+        encoding="utf-8",
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert (
+        "filters/ads.txt: domain is not approved in database: "
+        "unapproved.example"
+        in errors
+    )
+
+
+def test_validate_rejects_missing_approved_filter_rule(
+    built_runtime,
+):
+    rewrite_database(
+        built_runtime,
+        lambda rows: None,
+    )
+
+    errors = validate_runtime(built_runtime)
+
+    assert (
+        "filters/ads.txt: missing approved domain: "
+        "database-test.example"
+        in errors
     )
