@@ -26,11 +26,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install test and build tooling
+      - name: Install locked dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install build pytest
-          python -m pip install --editable .
+          python -m pip install --require-hashes -r requirements/ci.lock
+          python -m pip install --no-deps --no-build-isolation --editable .
 
       - name: Compile CLI entrypoint
         run: |
@@ -54,13 +53,13 @@ jobs:
 
       - name: Build wheel
         run: |
-          python -m build --wheel
+          python -m build --wheel --no-isolation
 
       - name: Install wheel in clean environment
         run: |
           python -m venv .wheel-venv
-          .wheel-venv/bin/python -m pip install --upgrade pip
-          .wheel-venv/bin/python -m pip install dist/*.whl
+          .wheel-venv/bin/python -m pip install --require-hashes -r requirements/runtime.lock
+          .wheel-venv/bin/python -m pip install --no-deps dist/*.whl
 
       - name: Smoke test installed wheel
         run: |
